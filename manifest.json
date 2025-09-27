@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "version": "1.0.0",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
+  "permissions": ["activeTab", "storage", "contextMenus"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Shorten with Sink",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["qrious.min.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

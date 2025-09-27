@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sink</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { width: 360px; min-height: 120px; display: grid; place-items: center; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color:#0f172a; background:#ffffff; }
+      .btn { padding: 10px 12px; border-radius: 12px; border: 1px solid #e5e7eb; background: #111827; color: #fff; cursor: pointer; transition: all .15s ease; }
+      .btn:hover { filter: brightness(1.05); }
+      .btn.secondary { background:#fff; color:#111827; }
+      .input { padding: 10px 12px; border:1px solid #e5e7eb; border-radius:12px; outline:none; width:100%; min-width:0; }
+      .input.error { border-color:#ef4444; }
+      .required { color:#ef4444; }
+      .muted { font-size:12px; color:#6b7280; }
+      .card { border:1px solid #e5e7eb; border-radius:14px; padding:12px; background:#fff; max-width:100%; }
+      .tabs { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px; background:#f3f4f6; padding:4px; border-radius:12px; }
+      .tab { padding:8px 10px; border:none; border-radius:10px; background:transparent; color:#111827; cursor:pointer; text-align:center; }
+      .tab.active { background:#111827; color:#fff; }
+      .metrics { display:flex; gap:10px; font-size:12px; color:#334155; }
+      .metric .value { font-size:16px; font-weight:600; color:#111827; }
+      .metric { display:grid; gap:2px; }
+      .metric .label { color:#64748b; }
+      canvas { width: 100%; height: 60px; }
+      .section-title { font-weight:600; font-size:13px; }
+      .section-desc { font-size:12px; color:#64748b; }
+      label.section-desc { display:block; margin-top:8px; }
+      .list-item { border:1px solid #e5e7eb; border-radius:12px; padding:10px; cursor:pointer; background:#fff; }
+      .list-item:hover { background:#f9fafb; }
+    </style>
+  </head>
+  <body>
+    <div style="display:grid; gap:10px; width:100%; padding:14px;">
+      <div class="tabs">
+        <button id="tab-create" data-tab="create" class="tab active">__MSG_titleCreate__</button>
+        <button id="tab-links" data-tab="links" class="tab">__MSG_titleLinks__</button>
+        <button id="tab-analytics" data-tab="analytics" class="tab">__MSG_titleAnalytics__</button>
+        <button id="tab-settings" data-tab="settings" class="tab">__MSG_titleSettings__</button>
+      </div>
+
+      <section id="panel-create" style="display:grid; gap:12px;">
+        <div class="card" style="display:grid;gap:12px;">
+          
+          <!-- Short Key Input Row -->
+          <div style="display:grid; gap:6px;">
+            <div id="label-short-key" style="font-size:12px; color:#64748b; font-weight:600;">Short Key</div>
+            <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; min-width:0;">
+              <div style="display:flex; align-items:center; padding:10px 12px; border:1px solid #e5e7eb; border-radius:12px; background:#f9fafb; min-width:0;">
+                <span id="host-prefix" style="font-weight:600; color:#111827;">https://example.com/</span><input id="input-slug" class="input" style="border:none; background:transparent; padding:0; margin-left:0; flex:2; min-width:0;" />
+              </div>
+              <button id="generate-slug" class="btn secondary" style="padding:9px 12px; font-size:12px; min-width:84px; white-space:nowrap;">Random</button>
+            </div>
+          </div>
+          
+          <!-- Long URL Input Row -->
+          <div style="display:grid; gap:6px;">
+            <div id="label-long-url" style="font-size:12px; color:#64748b; font-weight:600;">Long URL</div>
+            <input id="input-url" class="input" />
+          </div>
+          
+          <!-- Additional Options (Collapsed by default) -->
+          <div id="advanced-options" style="display:none; gap:8px;">
+            <label class="section-desc" for="input-comment">__MSG_comment__</label>
+            <input id="input-comment" class="input" placeholder="__MSG_comment__" />
+            
+            <label class="section-desc" for="input-expiration">__MSG_expiration__</label>
+            <input id="input-expiration" class="input" type="datetime-local" placeholder="Set expiration date" />
+          </div>
+          
+          <!-- Main Action Button -->
+          <button id="create" class="btn" style="width:100%; padding:12px; font-weight:600;">Create & Copy</button>
+          
+          <!-- Success Feedback -->
+          <div id="success-feedback" style="display:none; padding:12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; color:#166534; font-size:14px; font-weight:500; text-align:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+              </svg>
+              <span id="success-text">Short link created and copied!</span>
+            </div>
+          </div>
+          
+          <!-- Result Area with QR Button -->
+          <div id="result-area" style="display:none;">
+            <div id="result" class="muted" style="word-break:break-all; margin-bottom:8px;"></div>
+            <div style="display:flex; gap:8px;">
+              <button id="btn-copy-result" class="btn secondary" style="flex:1;">Copy</button>
+              <button id="btn-qr-result" class="btn secondary" style="flex:1;">QR Code</button>
+            </div>
+          </div>
+          
+          <!-- Bottom Actions -->
+          <div style="display:flex; justify-content:space-between;">
+            <button id="toggle-advanced" class="btn secondary" style="padding:8px 10px; font-size:12px;">Advanced</button>
+            <button id="open" class="btn secondary" style="padding:8px 10px;">Dashboard</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-links" style="display:none; max-height:360px;">
+        <div id="links" style="display:grid;gap:8px;overflow:auto;padding:0 2px;">
+          <!-- items injected here -->
+        </div>
+      </section>
+
+      <section id="panel-analytics" class="card" style="display: none;">
+        <div id="analytics-title" style="font-weight:600; margin-bottom:6px; font-size:13px;"></div>
+        <div class="metrics card" style="margin-top: 10px;">
+          <div class="metric"><div class="label">__MSG_visits__</div><div class="value" id="metric-visits">-</div></div>
+          <div class="metric"><div class="label">__MSG_visitors__</div><div class="value" id="metric-visitors">-</div></div>
+          <div class="metric"><div class="label">__MSG_referers__</div><div class="value" id="metric-referers">-</div></div>
+        </div>
+        <div style="margin-top:8px;" class="card">
+          <canvas id="chart" width="280" height="80"></canvas>
+        </div>
+        <div id="analytics-error" class="muted" style="margin-top:6px; display:none;"></div>
+      </section>
+
+      <section id="panel-settings" class="card" style="display: none;">
+        <div style="display:grid; gap:12px;">
+          <div class="muted">__MSG_settingsDesc__</div>
+          <input id="setting-host" class="input" placeholder="https://sink.cool/" aria-label="__MSG_host__" />
+          <input id="setting-token" class="input" type="password" placeholder="Your API token" aria-label="__MSG_token__" />
+          
+          <label class="section-desc" id="label-other-settings">__MSG_other__</label>
+          <div class="list-item" style="display:flex; align-items:center; justify-content:space-between;">
+            <label class="section-desc" for="setting-auto-detect" id="label-auto-detect" style="margin:0;">__MSG_autoDetect__</label>
+            <input id="setting-auto-detect" type="checkbox" style="width:16px; height:16px;" />
+          </div>
+          <div class="list-item" style="display:flex; align-items:center; justify-content:space-between;">
+            <label class="section-desc" for="setting-show-context" id="label-show-context" style="margin:0;">__MSG_showContextMenu__</label>
+            <input id="setting-show-context" type="checkbox" style="width:16px; height:16px;" />
+          </div>
+          
+          <br><div style="display:flex; gap:8px;">
+            <button id="setting-save" class="btn" style="flex:1;">__MSG_save__</button>
+            <button id="setting-test" class="btn secondary" style="flex:1;">__MSG_test__</button>
+          </div>
+          <div id="setting-status" class="muted"></div>
+        </div>
+      </section>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
