@@ -455,16 +455,13 @@ updateHostPrefix();
 
 
 // Advanced options toggle
-document.getElementById('toggle-advanced')?.addEventListener('click', () => {
+document.getElementById('toggle-advanced')?.addEventListener('click', async () => {
   const advanced = document.getElementById('advanced-options');
   const toggle = document.getElementById('toggle-advanced');
-  if (advanced.style.display === 'none') {
-    advanced.style.display = 'grid';
-    toggle.textContent = chrome.i18n.getMessage('simple') || 'Simple';
-  } else {
-    advanced.style.display = 'none';
-    toggle.textContent = chrome.i18n.getMessage('advanced') || 'Advanced';
-  }
+  let show = advanced.style.display === 'none';
+  advanced.style.display = show ? 'grid' : 'none';
+  toggle.textContent = show ? (chrome.i18n.getMessage('simple') || 'Simple') : (chrome.i18n.getMessage('advanced') || 'Advanced');
+  await chrome.storage.local.set({ showAdvanced: show });
 });
 
 // Result area buttons
@@ -500,18 +497,30 @@ document.getElementById('btn-qr-result')?.addEventListener('click', () => {
   close.textContent = chrome.i18n.getMessage('close') || 'Close';
   close.className = 'btn secondary';
   close.addEventListener('click', () => document.body.removeChild(dialog));
-  box.appendChild(img); box.appendChild(close); dialog.appendChild(box);
+  const download = document.createElement('button');
+  download.textContent = chrome.i18n.getMessage('download') || 'Download';
+  download.className = 'btn primary';
+  download.addEventListener('click', () => {
+    const el = document.createElement('a');
+    el.href = img.src;
+    const slug = shortUrl.split('/').pop();
+    el.download = `${slug}.png`;
+    el.click();
+  });
+  box.appendChild(img); box.appendChild(download); box.appendChild(close); dialog.appendChild(box);
   document.body.appendChild(dialog);
 });
 
+let renderLinksSeq = 0;
 async function renderLinks() {
+  const mySeq = ++renderLinksSeq;
   const listEl = document.getElementById('links');
   // Get current language for translations
-  const { autoDetectUrl } = await readSettings();
   listEl.innerHTML = `<span style="font-size:12px; color:#6b7280;">${chrome.i18n.getMessage('loading') || 'Loading...'}</span>`;
   try {
     const { host, token } = await readSettings();
     if (!host || !host.trim()) {
+      if (mySeq !== renderLinksSeq) return;
       listEl.innerHTML = '';
       await showInfoDialog('Settings', chrome.i18n.getMessage('configureHostFirst') || 'Please configure host in Settings.', [
         { id: 'open-settings', label: 'OK', primary: true }
@@ -526,6 +535,7 @@ async function renderLinks() {
     const data = await apiCall('api/link/list?limit=20');
      const links = (data?.links || []).filter(Boolean);
      linksCursor = data?.cursor || null;
+     if (mySeq !== renderLinksSeq) return;
      if (!links.length) {
        listEl.innerHTML = `<span style="font-size:12px; color:#6b7280;">${chrome.i18n.getMessage('noLinks') || 'No links.'}</span>`;
        return;
@@ -543,6 +553,7 @@ async function renderLinks() {
      }
     attachInfiniteScroll(listEl);
   } catch (e) {
+    if (mySeq !== renderLinksSeq) return;
     listEl.innerHTML = `<span style="font-size:12px; color:#b91c1c;">${chrome.i18n.getMessage('failedToLoad') || 'Failed to load'}: ${e?.message || e}</span>`;
   }
 }
@@ -605,7 +616,7 @@ function buildLinkItem(host, link, t) {
   faviconContainer.style.cssText = 'display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; bg-secondary; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:#f3f4f6;';
 
        const favicon = document.createElement('img');
-  favicon.src = `https://unavatar.io/${new URL(link.url).hostname}`;
+  favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}`;
   favicon.style.cssText = 'height:100%; width:100%; object-fit:cover;';
   favicon.onerror = () => { 
     faviconContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
@@ -730,10 +741,10 @@ function buildLinkItem(host, link, t) {
                 // Download button functionality
                 document.getElementById('downloadQR').onclick = () => {
                   const canvas = document.getElementById('qrCanvas');
-                  const link = document.createElement('a');
-                  link.download = `qr-${link.slug}.png`;
-                  link.href = canvas.toDataURL();
-                  link.click();
+                  const a = document.createElement('a');
+                  a.download = link.slug + '.png';
+                  a.href = canvas.toDataURL();
+                  a.click();
                 };
                 
                 // Close button functionality
@@ -1132,11 +1143,13 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
   lastSelectedSlug = null;
   switchTab('create');
 });
-document.getElementById('tab-links')?.addEventListener('click', () => {
-  // Clear analytics selection when switching away
+document.getElementById('tab-links')?.addEventListener('click', async () => {
   lastSelectedSlug = null;
-  renderLinks();
-  switchTab('links');
+  try {
+    await renderLinks();
+  } finally {
+    switchTab('links');
+  }
 });
 document.getElementById('tab-analytics')?.addEventListener('click', () => {
   // If no link selected yet, show global analytics
@@ -1307,6 +1320,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       urlInput.classList.remove('error');
     });
   }
+  const showAdvanced = (await chrome.storage.local.get('showAdvanced')).showAdvanced;
+  const advanced = document.getElementById('advanced-options');
+  const toggle = document.getElementById('toggle-advanced');
+  if (typeof showAdvanced !== 'undefined') {
+    advanced.style.display = showAdvanced ? 'grid' : 'none';
+    toggle.textContent = showAdvanced ? (chrome.i18n.getMessage('simple') || 'Simple') : (chrome.i18n.getMessage('advanced') || 'Advanced');
+  }
 });
 
 const chartState = new WeakMap();
@@ -1465,7 +1485,7 @@ document.getElementById('setting-save')?.addEventListener('click', async () => {
     normalizedHost = normalizeHostUrl(rawHost);
     if (!normalizedHost || !validateHostUrl(normalizedHost)) {
       s.textContent = chrome.i18n.getMessage('invalidHost') || 'Invalid host format';
-    return;
+  return;
   }
     document.getElementById('setting-host').value = normalizedHost;
   }

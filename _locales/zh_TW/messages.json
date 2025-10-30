@@ -1,64 +1,188 @@
 {
-  "appName": { "message": "Sink 快速縮短" },
-  "appDesc": { "message": "快速建立 Sink 短連結" },
-  "titleCreate": { "message": "建立" },
-  "titleLinks": { "message": "連結" },
-  "titleAnalytics": { "message": "分析" },
-  "titleSettings": { "message": "設定" },
-  "createShortLink": { "message": "建立短連結" },
-  "pasteUrl": { "message": "貼上網址。slug 留空自動產生。" },
-  "destinationUrl": { "message": "目標 URL" },
-  "customSlug": { "message": "自訂 slug（選填）" },
-  "comment": { "message": "備註" },
-  "expiration": { "message": "到期時間" },
-  "createCopy": { "message": "建立並複製" },
-  "dashboard": { "message": "儀錶板" },
-  "yourLinks": { "message": "您的連結" },
-  "manageLinks": { "message": "管理您的短連結" },
-  "refresh": { "message": "重新整理" },
-  "visits": { "message": "造訪次數" },
-  "visitors": { "message": "訪客" },
-  "referers": { "message": "來源" },
-  "settingsDesc": { "message": "在此設定您的 Sink 主機與令牌（後台登入密碼）。" },
-  "host": { "message": "主機" },
-  "token": { "message": "站台令牌（後台登入密碼）" },
-  "other": { "message": "其他" },
-  "autoDetect": { "message": "自動偵測目前分頁網址並填入目標 URL" },
-  "showContextMenu": { "message": "顯示快速縮短的右鍵選單" },
-  "contextMenuTitle": { "message": "使用 Sink 快速縮短" },
-  "save": { "message": "儲存" },
-  "test": { "message": "測試" },
-  "loading": { "message": "載入中..." },
-  "noLinks": { "message": "沒有連結。" },
-  "failedToLoad": { "message": "載入失敗" },
-  "createdAt": { "message": "建立" },
-  "expiresAt": { "message": "到期" },
-  "copied": { "message": "已複製" },
-  "updated": { "message": "已更新" },
-  "editing": { "message": "正在編輯" },
-  "random": { "message": "隨機" },
-  "deleteLink": { "message": "刪除連結" },
-  "confirmDelete": { "message": "確定要刪除" },
-  "confirmDeleteSuffix": { "message": "嗎？此操作無法返回。" },
-  "cancel": { "message": "取消" },
-  "delete": { "message": "刪除" },
-  "saved": { "message": "已儲存" },
-  "configureHostFirst": { "message": "請在設定中配置主機。" },
-  "destinationUrlRequired": { "message": "目標 URL 為必填" },
-  "invalidHost": { "message": "主機格式無效" },
-  "enterHostFirst": { "message": "請先輸入主機" },
-  "failed": { "message": "失敗" },
-  "testing": { "message": "測試中..." },
-  "shortKey": { "message": "短網址" },
-  "longUrl": { "message": "長網址" },
-  "advanced": { "message": "進階" },
-  "simple": { "message": "縮小" },
-  "close": { "message": "關閉" },
-  "slugCannotChange": { "message": "此選項無法更改" },
-  "randomDisabled": { "message": "此選項無法更改" },
-  "updatedAndCopied": { "message": "已更新並複製！" },
-  "createdAndCopied": { "message": "已建立並複製！" },
-  "download": { "message": "下載" },
-  "edit": { "message": "編輯" },
-  "analyticsAllLinks": { "message": "分析：所有連結" }
+   "advanced": {
+      "message": "進階"
+   },
+   "analyticsAllLinks": {
+      "message": "分析：所有連結"
+   },
+   "appDesc": {
+      "message": "快速建立 Sink 短連結"
+   },
+   "appName": {
+      "message": "Sink 快速縮短"
+   },
+   "autoDetect": {
+      "message": "自動偵測目前分頁網址並填入目標 URL"
+   },
+   "cancel": {
+      "message": "取消"
+   },
+   "close": {
+      "message": "關閉"
+   },
+   "comment": {
+      "message": "備註"
+   },
+   "configureHostFirst": {
+      "message": "請在設定中配置主機。"
+   },
+   "confirmDelete": {
+      "message": "確定要刪除"
+   },
+   "confirmDeleteSuffix": {
+      "message": "嗎？此操作無法返回。"
+   },
+   "contextMenuTitle": {
+      "message": "使用 Sink 快速縮短"
+   },
+   "copied": {
+      "message": "已複製"
+   },
+   "createCopy": {
+      "message": "建立並複製"
+   },
+   "createShortLink": {
+      "message": "建立短連結"
+   },
+   "createdAndCopied": {
+      "message": "已建立並複製！"
+   },
+   "createdAt": {
+      "message": "建立"
+   },
+   "customSlug": {
+      "message": "自訂 slug（選填）"
+   },
+   "dashboard": {
+      "message": "儀錶板"
+   },
+   "delete": {
+      "message": "刪除"
+   },
+   "deleteLink": {
+      "message": "刪除連結"
+   },
+   "destinationUrl": {
+      "message": "目標 URL"
+   },
+   "destinationUrlRequired": {
+      "message": "目標 URL 為必填"
+   },
+   "download": {
+      "message": "下載"
+   },
+   "edit": {
+      "message": "編輯"
+   },
+   "editing": {
+      "message": "正在編輯"
+   },
+   "enterHostFirst": {
+      "message": "請先輸入主機"
+   },
+   "expiration": {
+      "message": "到期時間"
+   },
+   "expiresAt": {
+      "message": "到期"
+   },
+   "failed": {
+      "message": "失敗"
+   },
+   "failedToLoad": {
+      "message": "載入失敗"
+   },
+   "host": {
+      "message": "主機"
+   },
+   "invalidHost": {
+      "message": "主機格式無效"
+   },
+   "loading": {
+      "message": "載入中..."
+   },
+   "longUrl": {
+      "message": "長網址"
+   },
+   "manageLinks": {
+      "message": "管理您的短連結"
+   },
+   "noLinks": {
+      "message": "沒有連結。"
+   },
+   "other": {
+      "message": "其他"
+   },
+   "pasteUrl": {
+      "message": "貼上網址。slug 留空自動產生。"
+   },
+   "random": {
+      "message": "隨機"
+   },
+   "randomDisabled": {
+      "message": "此選項無法更改"
+   },
+   "referers": {
+      "message": "來源"
+   },
+   "refresh": {
+      "message": "重新整理"
+   },
+   "save": {
+      "message": "儲存"
+   },
+   "saved": {
+      "message": "已儲存"
+   },
+   "settingsDesc": {
+      "message": "在此設定您的 Sink 主機與令牌（後台登入密碼）。"
+   },
+   "shortKey": {
+      "message": "短網址"
+   },
+   "showContextMenu": {
+      "message": "顯示快速縮短的右鍵選單"
+   },
+   "simple": {
+      "message": "縮小"
+   },
+   "slugCannotChange": {
+      "message": "此選項無法更改"
+   },
+   "test": {
+      "message": "測試"
+   },
+   "testing": {
+      "message": "測試中..."
+   },
+   "titleAnalytics": {
+      "message": "分析"
+   },
+   "titleCreate": {
+      "message": "建立"
+   },
+   "titleLinks": {
+      "message": "連結"
+   },
+   "titleSettings": {
+      "message": "設定"
+   },
+   "token": {
+      "message": "站台令牌（後台登入密碼）"
+   },
+   "updated": {
+      "message": "已更新"
+   },
+   "updatedAndCopied": {
+      "message": "已更新並複製！"
+   },
+   "visitors": {
+      "message": "訪客"
+   },
+   "visits": {
+      "message": "造訪次數"
+   },
+   "yourLinks": {
+      "message": "您的連結"
+   }
 }

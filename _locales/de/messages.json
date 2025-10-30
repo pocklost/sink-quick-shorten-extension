@@ -1,66 +1,188 @@
 {
-  "appName": { "message": "Sink Schnellkürzen" },
-  "appDesc": { "message": "Erstelle schnell Kurzlinks in Sink" },
-  "titleCreate": { "message": "Erstellen" },
-  "titleLinks": { "message": "Links" },
-  "titleAnalytics": { "message": "Analysen" },
-  "titleSettings": { "message": "Einstellungen" },
-  "createShortLink": { "message": "Kurzlink erstellen" },
-  "pasteUrl": { "message": "URL einfügen. Slug leer lassen für automatisch." },
-  "destinationUrl": { "message": "Ziel-URL" },
-  "customSlug": { "message": "Eigener Slug (optional)" },
-  "comment": { "message": "Kommentar" },
-  "expiration": { "message": "Ablauf" },
-  "createCopy": { "message": "Erstellen & Kopieren" },
-  "dashboard": { "message": "Dashboard" },
-  "yourLinks": { "message": "Deine Links" },
-  "manageLinks": { "message": "Verwalte deine Kurzlinks" },
-  "refresh": { "message": "Aktualisieren" },
-  "visits": { "message": "Besuche" },
-  "visitors": { "message": "Besucher" },
-  "referers": { "message": "Referrer" },
-  "settingsDesc": { "message": "Konfiguriere hier deinen Sink-Host und Token (Admin‑Login‑Passwort)." },
-  "host": { "message": "Host" },
-  "token": { "message": "Site-Token (Admin‑Login‑Passwort)" },
-  "other": { "message": "Sonstiges" },
-  "autoDetect": { "message": "Aktuelle Tab-URL erkennen und Ziel-URL ausfüllen" },
-  "showContextMenu": { "message": "Rechtsklick-Menü für Schnellkürzen anzeigen" },
-  "contextMenuTitle": { "message": "Schnellkürzen mit Sink" },
-  "save": { "message": "Speichern" },
-  "test": { "message": "Test" },
-  "loading": { "message": "Laden..." },
-  "noLinks": { "message": "Keine Links." },
-  "failedToLoad": { "message": "Laden fehlgeschlagen" },
-  "createdAt": { "message": "Erstellt" },
-  "expiresAt": { "message": "Läuft ab" },
-  "copied": { "message": "Kopiert" },
-  "updated": { "message": "Aktualisiert" },
-  "editing": { "message": "Bearbeiten" },
-  "deleteLink": { "message": "Link löschen" },
-  "confirmDelete": { "message": "Möchtest du wirklich löschen" },
-  "confirmDeleteSuffix": { "message": "? Diese Aktion kann nicht rückgängig gemacht werden." },
-  "cancel": { "message": "Abbrechen" },
-  "delete": { "message": "Löschen" },
-  "saved": { "message": "Gespeichert" },
-  "configureHostFirst": { "message": "Bitte Host in den Einstellungen konfigurieren." },
-  "destinationUrlRequired": { "message": "Ziel-URL ist erforderlich" },
-  "invalidHost": { "message": "Ungültiges Host-Format" },
-  "enterHostFirst": { "message": "Bitte zuerst einen Host eingeben" },
-  "failed": { "message": "Fehlgeschlagen" },
-  "testing": { "message": "Teste..." },
-  "shortKey": { "message": "Kurzer Schlüssel" },
-  "longUrl": { "message": "Lange URL" },
-  "advanced": { "message": "Erweitert" },
-  "simple": { "message": "Einfach" },
-  "random": { "message": "Zufällig" },
-  "close": { "message": "Schließen" },
-  "slugCannotChange": { "message": "Diese Option kann nicht geändert werden" },
-  "randomDisabled": { "message": "Diese Option kann nicht geändert werden" },
-  "updatedAndCopied": { "message": "Aktualisiert und kopiert!" },
-  "createdAndCopied": { "message": "Erstellt und kopiert!" },
-  "download": { "message": "Herunterladen" },
-  "edit": { "message": "Bearbeiten" },
-  "analyticsAllLinks": { "message": "Analytik: Alle Links" }
+   "advanced": {
+      "message": "Erweitert"
+   },
+   "analyticsAllLinks": {
+      "message": "Analytik: Alle Links"
+   },
+   "appDesc": {
+      "message": "Erstelle schnell Kurzlinks in Sink"
+   },
+   "appName": {
+      "message": "Sink Schnellkürzen"
+   },
+   "autoDetect": {
+      "message": "Aktuelle Tab-URL erkennen und Ziel-URL ausfüllen"
+   },
+   "cancel": {
+      "message": "Abbrechen"
+   },
+   "close": {
+      "message": "Schließen"
+   },
+   "comment": {
+      "message": "Kommentar"
+   },
+   "configureHostFirst": {
+      "message": "Bitte Host in den Einstellungen konfigurieren."
+   },
+   "confirmDelete": {
+      "message": "Möchtest du wirklich löschen"
+   },
+   "confirmDeleteSuffix": {
+      "message": "? Diese Aktion kann nicht rückgängig gemacht werden."
+   },
+   "contextMenuTitle": {
+      "message": "Schnellkürzen mit Sink"
+   },
+   "copied": {
+      "message": "Kopiert"
+   },
+   "createCopy": {
+      "message": "Erstellen & Kopieren"
+   },
+   "createShortLink": {
+      "message": "Kurzlink erstellen"
+   },
+   "createdAndCopied": {
+      "message": "Erstellt und kopiert!"
+   },
+   "createdAt": {
+      "message": "Erstellt"
+   },
+   "customSlug": {
+      "message": "Eigener Slug (optional)"
+   },
+   "dashboard": {
+      "message": "Dashboard"
+   },
+   "delete": {
+      "message": "Löschen"
+   },
+   "deleteLink": {
+      "message": "Link löschen"
+   },
+   "destinationUrl": {
+      "message": "Ziel-URL"
+   },
+   "destinationUrlRequired": {
+      "message": "Ziel-URL ist erforderlich"
+   },
+   "download": {
+      "message": "Herunterladen"
+   },
+   "edit": {
+      "message": "Bearbeiten"
+   },
+   "editing": {
+      "message": "Bearbeiten"
+   },
+   "enterHostFirst": {
+      "message": "Bitte zuerst einen Host eingeben"
+   },
+   "expiration": {
+      "message": "Ablauf"
+   },
+   "expiresAt": {
+      "message": "Läuft ab"
+   },
+   "failed": {
+      "message": "Fehlgeschlagen"
+   },
+   "failedToLoad": {
+      "message": "Laden fehlgeschlagen"
+   },
+   "host": {
+      "message": "Host"
+   },
+   "invalidHost": {
+      "message": "Ungültiges Host-Format"
+   },
+   "loading": {
+      "message": "Laden..."
+   },
+   "longUrl": {
+      "message": "Lange URL"
+   },
+   "manageLinks": {
+      "message": "Verwalte deine Kurzlinks"
+   },
+   "noLinks": {
+      "message": "Keine Links."
+   },
+   "other": {
+      "message": "Sonstiges"
+   },
+   "pasteUrl": {
+      "message": "URL einfügen. Slug leer lassen für automatisch."
+   },
+   "random": {
+      "message": "Zufällig"
+   },
+   "randomDisabled": {
+      "message": "Diese Option kann nicht geändert werden"
+   },
+   "referers": {
+      "message": "Referrer"
+   },
+   "refresh": {
+      "message": "Aktualisieren"
+   },
+   "save": {
+      "message": "Speichern"
+   },
+   "saved": {
+      "message": "Gespeichert"
+   },
+   "settingsDesc": {
+      "message": "Konfiguriere hier deinen Sink-Host und Token (Admin‑Login‑Passwort)."
+   },
+   "shortKey": {
+      "message": "Kurzer Schlüssel"
+   },
+   "showContextMenu": {
+      "message": "Rechtsklick-Menü für Schnellkürzen anzeigen"
+   },
+   "simple": {
+      "message": "Einfach"
+   },
+   "slugCannotChange": {
+      "message": "Diese Option kann nicht geändert werden"
+   },
+   "test": {
+      "message": "Test"
+   },
+   "testing": {
+      "message": "Teste..."
+   },
+   "titleAnalytics": {
+      "message": "Analysen"
+   },
+   "titleCreate": {
+      "message": "Erstellen"
+   },
+   "titleLinks": {
+      "message": "Links"
+   },
+   "titleSettings": {
+      "message": "Einstellungen"
+   },
+   "token": {
+      "message": "Site-Token (Admin‑Login‑Passwort)"
+   },
+   "updated": {
+      "message": "Aktualisiert"
+   },
+   "updatedAndCopied": {
+      "message": "Aktualisiert und kopiert!"
+   },
+   "visitors": {
+      "message": "Besucher"
+   },
+   "visits": {
+      "message": "Besuche"
+   },
+   "yourLinks": {
+      "message": "Deine Links"
+   }
 }
-
-

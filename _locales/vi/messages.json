@@ -1,66 +1,188 @@
 {
-  "appName": { "message": "Sink Rút Gọn Nhanh" },
-  "appDesc": { "message": "Tạo liên kết ngắn trong Sink một cách nhanh chóng" },
-  "titleCreate": { "message": "Tạo" },
-  "titleLinks": { "message": "Liên kết" },
-  "titleAnalytics": { "message": "Phân tích" },
-  "titleSettings": { "message": "Cài đặt" },
-  "createShortLink": { "message": "Tạo liên kết ngắn" },
-  "pasteUrl": { "message": "Dán URL. Để trống slug để tự động." },
-  "destinationUrl": { "message": "URL đích" },
-  "customSlug": { "message": "Slug tùy chỉnh (tùy chọn)" },
-  "comment": { "message": "Ghi chú" },
-  "expiration": { "message": "Hết hạn" },
-  "createCopy": { "message": "Tạo & Sao chép" },
-  "dashboard": { "message": "Bảng điều khiển" },
-  "yourLinks": { "message": "Liên kết của bạn" },
-  "manageLinks": { "message": "Quản lý liên kết ngắn của bạn" },
-  "refresh": { "message": "Làm mới" },
-  "visits": { "message": "Lượt truy cập" },
-  "visitors": { "message": "Khách truy cập" },
-  "referers": { "message": "Nguồn giới thiệu" },
-  "settingsDesc": { "message": "Cấu hình máy chủ và token (mật khẩu đăng nhập quản trị) của Sink tại đây." },
-  "host": { "message": "Máy chủ" },
-  "token": { "message": "Token trang (mật khẩu đăng nhập quản trị)" },
-  "other": { "message": "Khác" },
-  "autoDetect": { "message": "Tự phát hiện URL tab hiện tại và điền URL đích" },
-  "showContextMenu": { "message": "Hiển thị menu chuột phải cho Rút Gọn Nhanh" },
-  "contextMenuTitle": { "message": "Rút gọn nhanh với Sink" },
-  "save": { "message": "Lưu" },
-  "test": { "message": "Kiểm tra" },
-  "loading": { "message": "Đang tải..." },
-  "noLinks": { "message": "Không có liên kết." },
-  "failedToLoad": { "message": "Tải thất bại" },
-  "createdAt": { "message": "Đã tạo" },
-  "expiresAt": { "message": "Hết hạn" },
-  "copied": { "message": "Đã sao chép" },
-  "updated": { "message": "Đã cập nhật" },
-  "editing": { "message": "Đang chỉnh sửa" },
-  "deleteLink": { "message": "Xóa liên kết" },
-  "confirmDelete": { "message": "Bạn có chắc muốn xóa" },
-  "confirmDeleteSuffix": { "message": "? Hành động này không thể hoàn tác." },
-  "cancel": { "message": "Hủy" },
-  "delete": { "message": "Xóa" },
-  "saved": { "message": "Đã lưu" },
-  "configureHostFirst": { "message": "Vui lòng cấu hình máy chủ trong Cài đặt." },
-  "destinationUrlRequired": { "message": "Cần URL đích" },
-  "invalidHost": { "message": "Định dạng máy chủ không hợp lệ" },
-  "enterHostFirst": { "message": "Vui lòng nhập máy chủ trước" },
-  "failed": { "message": "Thất bại" },
-  "testing": { "message": "Đang kiểm tra..." },
-  "shortKey": { "message": "Khóa ngắn" },
-  "longUrl": { "message": "URL dài" },
-  "advanced": { "message": "Nâng cao" },
-  "simple": { "message": "Đơn giản" },
-  "random": { "message": "Ngẫu nhiên" },
-  "close": { "message": "Đóng" },
-  "slugCannotChange": { "message": "Tùy chọn này không thể thay đổi" },
-  "randomDisabled": { "message": "Tùy chọn này không thể thay đổi" },
-  "updatedAndCopied": { "message": "Đã cập nhật và sao chép!" },
-  "createdAndCopied": { "message": "Đã tạo và sao chép!" },
-  "download": { "message": "Tải xuống" },
-  "edit": { "message": "Chỉnh sửa" },
-  "analyticsAllLinks": { "message": "Phân tích: Tất cả liên kết" }
+   "advanced": {
+      "message": "Nâng cao"
+   },
+   "analyticsAllLinks": {
+      "message": "Phân tích: Tất cả liên kết"
+   },
+   "appDesc": {
+      "message": "Tạo liên kết ngắn trong Sink một cách nhanh chóng"
+   },
+   "appName": {
+      "message": "Sink Rút Gọn Nhanh"
+   },
+   "autoDetect": {
+      "message": "Tự phát hiện URL tab hiện tại và điền URL đích"
+   },
+   "cancel": {
+      "message": "Hủy"
+   },
+   "close": {
+      "message": "Đóng"
+   },
+   "comment": {
+      "message": "Ghi chú"
+   },
+   "configureHostFirst": {
+      "message": "Vui lòng cấu hình máy chủ trong Cài đặt."
+   },
+   "confirmDelete": {
+      "message": "Bạn có chắc muốn xóa"
+   },
+   "confirmDeleteSuffix": {
+      "message": "? Hành động này không thể hoàn tác."
+   },
+   "contextMenuTitle": {
+      "message": "Rút gọn nhanh với Sink"
+   },
+   "copied": {
+      "message": "Đã sao chép"
+   },
+   "createCopy": {
+      "message": "Tạo & Sao chép"
+   },
+   "createShortLink": {
+      "message": "Tạo liên kết ngắn"
+   },
+   "createdAndCopied": {
+      "message": "Đã tạo và sao chép!"
+   },
+   "createdAt": {
+      "message": "Đã tạo"
+   },
+   "customSlug": {
+      "message": "Slug tùy chỉnh (tùy chọn)"
+   },
+   "dashboard": {
+      "message": "Bảng điều khiển"
+   },
+   "delete": {
+      "message": "Xóa"
+   },
+   "deleteLink": {
+      "message": "Xóa liên kết"
+   },
+   "destinationUrl": {
+      "message": "URL đích"
+   },
+   "destinationUrlRequired": {
+      "message": "Cần URL đích"
+   },
+   "download": {
+      "message": "Tải xuống"
+   },
+   "edit": {
+      "message": "Chỉnh sửa"
+   },
+   "editing": {
+      "message": "Đang chỉnh sửa"
+   },
+   "enterHostFirst": {
+      "message": "Vui lòng nhập máy chủ trước"
+   },
+   "expiration": {
+      "message": "Hết hạn"
+   },
+   "expiresAt": {
+      "message": "Hết hạn"
+   },
+   "failed": {
+      "message": "Thất bại"
+   },
+   "failedToLoad": {
+      "message": "Tải thất bại"
+   },
+   "host": {
+      "message": "Máy chủ"
+   },
+   "invalidHost": {
+      "message": "Định dạng máy chủ không hợp lệ"
+   },
+   "loading": {
+      "message": "Đang tải..."
+   },
+   "longUrl": {
+      "message": "URL dài"
+   },
+   "manageLinks": {
+      "message": "Quản lý liên kết ngắn của bạn"
+   },
+   "noLinks": {
+      "message": "Không có liên kết."
+   },
+   "other": {
+      "message": "Khác"
+   },
+   "pasteUrl": {
+      "message": "Dán URL. Để trống slug để tự động."
+   },
+   "random": {
+      "message": "Ngẫu nhiên"
+   },
+   "randomDisabled": {
+      "message": "Tùy chọn này không thể thay đổi"
+   },
+   "referers": {
+      "message": "Nguồn giới thiệu"
+   },
+   "refresh": {
+      "message": "Làm mới"
+   },
+   "save": {
+      "message": "Lưu"
+   },
+   "saved": {
+      "message": "Đã lưu"
+   },
+   "settingsDesc": {
+      "message": "Cấu hình máy chủ và token (mật khẩu đăng nhập quản trị) của Sink tại đây."
+   },
+   "shortKey": {
+      "message": "Khóa ngắn"
+   },
+   "showContextMenu": {
+      "message": "Hiển thị menu chuột phải cho Rút Gọn Nhanh"
+   },
+   "simple": {
+      "message": "Đơn giản"
+   },
+   "slugCannotChange": {
+      "message": "Tùy chọn này không thể thay đổi"
+   },
+   "test": {
+      "message": "Kiểm tra"
+   },
+   "testing": {
+      "message": "Đang kiểm tra..."
+   },
+   "titleAnalytics": {
+      "message": "Phân tích"
+   },
+   "titleCreate": {
+      "message": "Tạo"
+   },
+   "titleLinks": {
+      "message": "Liên kết"
+   },
+   "titleSettings": {
+      "message": "Cài đặt"
+   },
+   "token": {
+      "message": "Token trang (mật khẩu đăng nhập quản trị)"
+   },
+   "updated": {
+      "message": "Đã cập nhật"
+   },
+   "updatedAndCopied": {
+      "message": "Đã cập nhật và sao chép!"
+   },
+   "visitors": {
+      "message": "Khách truy cập"
+   },
+   "visits": {
+      "message": "Lượt truy cập"
+   },
+   "yourLinks": {
+      "message": "Liên kết của bạn"
+   }
 }
-
-

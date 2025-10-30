@@ -1,26 +1,26 @@
 {
-  "manifest_version": 3,
-  "name": "__MSG_appName__",
-  "version": "1.0.0",
-  "description": "__MSG_appDesc__",
-  "default_locale": "en",
-  "permissions": ["activeTab", "storage", "contextMenus"],
-  "host_permissions": ["<all_urls>"],
-  "action": {
-    "default_title": "Shorten with Sink",
-    "default_popup": "popup.html"
-  },
-  "options_page": "options.html",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "icons": {
-    "128": "icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["qrious.min.js"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+   "action": {
+      "default_popup": "popup.html",
+      "default_title": "Shorten with Sink"
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "default_locale": "en",
+   "description": "__MSG_appDesc__",
+   "host_permissions": [ "\u003Call_urls>" ],
+   "icons": {
+      "128": "icons/icon128.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAna82KqcVcRowmTQA31bF9VqltzVXYuPM27xv2bSXonn/6tkIBD5Lnr6jUGhtbvUqbWqUXJNRFww0tkFx6G4ZN0SkVe9eJhQAEhyN90nYK3H7hG/rzvADKMCzFoJ44D3Q3w5WXN2RiWegF9JBGRNHVRMj+ftGiXEfgDyP1jGw4tv6thHyZdX7ll0RQibSTckAFlp2y3KY2C1lL78Jo/plxR6ZTCXTfX3jobmI1u/pNtzBcTZY69q0+y8OMK32y0xIxSCil7D/KsWevxTrsFzBnVArkO8bUDTxd+boZVaGnvWRtELQGjWxSA7N2v+aXqQm6yp4GP8fxAr9m/3OHdQujwIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_appName__",
+   "options_page": "options.html",
+   "permissions": [ "activeTab", "storage", "contextMenus" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.1.0",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "qrious.min.js" ]
+   } ]
 }
