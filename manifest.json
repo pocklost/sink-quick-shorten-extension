@@ -12,7 +12,6 @@
    "icons": {
       "128": "icons/icon128.png"
    },
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAna82KqcVcRowmTQA31bF9VqltzVXYuPM27xv2bSXonn/6tkIBD5Lnr6jUGhtbvUqbWqUXJNRFww0tkFx6G4ZN0SkVe9eJhQAEhyN90nYK3H7hG/rzvADKMCzFoJ44D3Q3w5WXN2RiWegF9JBGRNHVRMj+ftGiXEfgDyP1jGw4tv6thHyZdX7ll0RQibSTckAFlp2y3KY2C1lL78Jo/plxR6ZTCXTfX3jobmI1u/pNtzBcTZY69q0+y8OMK32y0xIxSCil7D/KsWevxTrsFzBnVArkO8bUDTxd+boZVaGnvWRtELQGjWxSA7N2v+aXqQm6yp4GP8fxAr9m/3OHdQujwIDAQAB",
    "manifest_version": 3,
    "name": "__MSG_appName__",
    "options_page": "options.html",
