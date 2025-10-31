@@ -5,57 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sink Options</title>
     <style>
-      body { max-width: 560px; margin: 24px auto; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:#0f172a; }
-      h2 { margin: 0 0 8px; }
-      .muted { color:#6b7280; font-size: 13px; }
-      label { display:block; margin: 12px 0 6px; font-size: 14px; color:#334155; }
-      input, select { width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; }
-      .row { display:flex; gap:10px; align-items:center; justify-content:space-between; border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; }
-      .btns { display:flex; gap:10px; }
-      button { padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; background: #111827; color: #fff; cursor: pointer; }
-      button.secondary { background:#fff; color:#111827; }
-      button:hover { filter: brightness(1.05); }
-      #saved { margin-top: 8px; color: #059669; }
-      @media (prefers-color-scheme: dark) {
-        body { background: #0F0F0F !important; color: #f1f1f1 !important; }
-        .muted { color: #b0b0b0 !important; }
-        label { color: #e4e4e7 !important; }
-        input, select { background: #181A20 !important; color: #fff !important; border-color: #393B42 !important; }
-        .row { background:#23262F !important; color:#fff !important; border-color:#393B42 !important; }
-        button { background: #393B42 !important; color: #fff !important; border-color: #23262F !important; }
-        button.secondary { background:#282a36 !important; color: #fff !important; border-color: #393B42 !important; }
-        button:hover { filter:brightness(1.1); }
-        #saved { color: #30C48D !important; }
+      *,*::before,*::after{box-sizing:border-box}
+      html,body{margin:0;padding:0}
+      body{max-width:640px;margin:24px auto;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#0f172a;background:#ffffff;padding:0 16px}
+      .stack{display:grid;gap:12px}
+      .title{font-size:20px;font-weight:700;margin:0}
+      .muted{color:#6b7280;font-size:13px}
+      .label{font-size:14px;color:#334155}
+      .input{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff}
+      .row{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;background:#ffffff}
+      .btns{display:flex;gap:10px}
+      button{padding:10px 12px;border-radius:12px;border:1px solid #e5e7eb;background:#111827;color:#ffffff;cursor:pointer;transition:filter .15s ease}
+      button:hover{filter:brightness(1.05)}
+      button.secondary{background:#ffffff;color:#111827}
+      #saved{margin-top:8px;color:#059669}
+      @media (prefers-color-scheme: dark){
+        body{background:#0F0F0F;color:#f1f1f1}
+        .muted{color:#b0b0b0}
+        .label{color:#e4e4e7}
+        .input{background:#181A20;color:#ffffff;border-color:#393B42}
+        .row{background:#23262F;color:#ffffff;border-color:#393B42}
+        button{background:#393B42;color:#ffffff;border-color:#23262F}
+        button.secondary{background:#282a36;color:#ffffff;border-color:#393B42}
+        #saved{color:#30C48D}
       }
     </style>
   </head>
   <body>
-    <h2>Sink Quick Shorten Settings</h2>
-    <p class="muted">Configure your Sink host and token here.</p>
-
-    <label for="host">Host</label>
-    <input id="host" placeholder="https://sink.cool/" />
-
-    <label for="token">Site Token</label>
-    <input id="token" type="password" placeholder="Your API token" />
-
-    <label>Other</label>
-    <div class="row">
-      <span class="muted">Auto-detect current tab URL and fill Destination URL</span>
-      <input id="auto-detect" type="checkbox" style="width:16px; height:16px;" />
+    <div class="stack">
+      <h2 class="title">Sink Quick Shorten</h2>
+      <p class="muted">Configure your Sink host and token here.</p>
+      <label class="label" for="host">Host</label>
+      <input id="host" class="input" placeholder="https://sink.cool/" />
+      <label class="label" for="token">Site Token</label>
+      <input id="token" class="input" type="password" placeholder="Your API token" />
+      <div class="label">Other</div>
+      <div class="row">
+        <span class="muted">Auto-detect current tab URL and fill Destination URL</span>
+        <input id="auto-detect" type="checkbox" style="width:16px;height:16px" />
+      </div>
+      <div class="row">
+        <span class="muted">Show right-click menu for Quick Shorten</span>
+        <input id="show-context" type="checkbox" style="width:16px;height:16px" />
+      </div>
+      <div class="btns" style="margin-top:12px">
+        <button id="save">Save</button>
+        <button id="test" class="secondary">Test</button>
+      </div>
+      <p id="saved" style="display:none">Saved!</p>
+      <p id="status" class="muted"></p>
     </div>
-    <div class="row">
-      <span class="muted">Show right-click menu for Quick Shorten</span>
-      <input id="show-context" type="checkbox" style="width:16px; height:16px;" />
-    </div>
-
-    <div class="btns" style="margin-top: 12px;">
-      <button id="save">Save</button>
-      <button id="test" class="secondary">Test</button>
-    </div>
-    <p id="saved" style="display:none;">Saved!</p>
-    <p id="status" class="muted"></p>
-
     <script src="options.js"></script>
   </body>
 </html>
