@@ -1,3 +1,106 @@
+function isDarkMode() {
+  try {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+function themeColors() {
+  if (isDarkMode()) {
+    return {
+      bg: '#0F0F0F',
+      cardBg: '#181A20',
+      overlay: 'rgba(0,0,0,0.5)',
+      border: '#23262F',
+      borderSoft: '#393B42',
+      text: '#f1f1f1',
+      textMuted: '#a1a1aa',
+      textSecondary: '#c1c1c1',
+      primary: '#393B42',
+      secondary: '#282a36',
+      hover: '#23262F',
+      listItem: '#23262F',
+      listItemHover: '#181A20',
+      separator: '#2f3137',
+      chartStroke: '#e5e7eb',
+      chartFillTop: 'rgba(229,231,235,0.2)'
+    };
+  }
+  return {
+    bg: '#ffffff',
+    cardBg: '#fff',
+    overlay: 'rgba(0,0,0,0.5)',
+    border: '#e5e7eb',
+    borderSoft: '#d1d5db',
+    text: '#111827',
+    textMuted: '#6b7280',
+    textSecondary: '#374151',
+    primary: '#111827',
+    secondary: '#fff',
+    hover: '#f3f4f6',
+    listItem: '#fff',
+    listItemHover: '#f8fafc',
+    separator: '#e5e7eb',
+    chartStroke: '#111827',
+    chartFillTop: 'rgba(17,24,39,0.15)'
+  };
+}
+
+function applyThemeToStaticElements() {
+  const c = themeColors();
+  const prefix = document.getElementById('host-prefix');
+  const slugInput = document.getElementById('input-slug');
+  if (prefix && prefix.parentElement) {
+    const wrap = prefix.parentElement;
+    wrap.style.display = 'flex';
+    wrap.style.alignItems = 'center';
+    wrap.style.padding = '10px 12px';
+    wrap.style.border = `1px solid ${c.border}`;
+    wrap.style.borderRadius = '12px';
+    wrap.style.background = isDarkMode() ? '#14151A' : '#f9fafb';
+    wrap.style.minWidth = '0';
+  }
+  if (prefix) {
+    prefix.style.fontWeight = '600';
+    prefix.style.color = c.text;
+  }
+  if (slugInput) {
+    slugInput.style.border = 'none';
+    slugInput.style.padding = '0px';
+    slugInput.style.marginLeft = '0px';
+    slugInput.style.flex = '2 1 0%';
+    slugInput.style.minWidth = '0px';
+    slugInput.style.background = 'transparent';
+    slugInput.style.color = c.text;
+  }
+  const tabsEl = document.querySelector('.tabs');
+  if (tabsEl) {
+    const cWrap = themeColors();
+    tabsEl.style.background = isDarkMode() ? '#111317' : '#f3f4f6';
+    tabsEl.style.border = `1px solid ${cWrap.border}`;
+    tabsEl.style.borderRadius = '12px';
+    tabsEl.style.padding = '4px';
+    const btns = tabsEl.querySelectorAll('button[data-tab]');
+    btns.forEach((b) => {
+      const active = b.classList.contains('active');
+      b.style.background = active ? c.primary : 'transparent';
+      b.style.color = active ? '#fff' : c.textMuted;
+    });
+  }
+  const existing = document.getElementById('dynamic-scrollbar-style');
+  if (existing) existing.remove();
+  const style = document.createElement('style');
+  style.id = 'dynamic-scrollbar-style';
+  style.textContent = `
+    #links::-webkit-scrollbar{width:10px;height:10px}
+    #links::-webkit-scrollbar-track{background:${isDarkMode() ? '#111317' : '#f1f5f9'};border-radius:8px}
+    #links::-webkit-scrollbar-thumb{background:${isDarkMode() ? '#2a2d34' : '#cbd5e1'};border-radius:8px;border:2px solid ${isDarkMode() ? '#111317' : '#f1f5f9'}}
+    #links::-webkit-scrollbar-thumb:hover{background:${isDarkMode() ? '#3a3e47' : '#94a3b8'}}
+  `;
+  document.head.appendChild(style);
+}
+
 async function jumpToSink() {
   const { host } = await readSettings();
   if (!host || !host.trim()) {
@@ -15,15 +118,16 @@ async function jumpToSink() {
 // Simple info dialog (styled like delete dialog)
 async function showInfoDialog(title, message, actions = [{ id: 'ok', label: 'OK', primary: true }]) {
   return new Promise((resolve) => {
+    const c = themeColors();
     const dialog = document.createElement('div');
-    dialog.style = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;';
+    dialog.style = `position:fixed; top:0; left:0; right:0; bottom:0; background:${c.overlay}; display:flex; align-items:center; justify-content:center; z-index:1000;`;
     const dialogContent = document.createElement('div');
-    dialogContent.style = 'background:#fff; border-radius:12px; padding:20px; max-width:320px; margin:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2);';
+    dialogContent.style = `background:${c.cardBg}; border-radius:12px; padding:20px; max-width:320px; margin:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); border:1px solid ${c.border}; color:${c.text};`;
     dialogContent.innerHTML = `
-      <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#111827;">${title || ''}</div>
-      <div style="color:#6b7280; font-size:14px; margin-bottom:20px;">${message || ''}</div>
+      <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:${c.text};">${title || ''}</div>
+      <div style="color:${c.textMuted}; font-size:14px; margin-bottom:20px;">${message || ''}</div>
       <div style="display:flex; gap:8px; justify-content:flex-end;">
-        ${actions.map(a => `<button data-id="${a.id}" style="padding:8px 16px; border:1px solid ${a.primary ? '#111827' : '#d1d5db'}; border-radius:8px; background:${a.primary ? '#111827' : '#fff'}; color:${a.primary ? '#fff' : '#374151'}; cursor:pointer; font-size:14px;">${a.label}</button>`).join('')}
+        ${actions.map(a => `<button data-id="${a.id}" style="padding:8px 16px; border:1px solid ${a.primary ? c.primary : c.borderSoft}; border-radius:8px; background:${a.primary ? c.primary : c.secondary}; color:${a.primary ? '#fff' : c.textSecondary}; cursor:pointer; font-size:14px;">${a.label}</button>`).join('')}
       </div>
     `;
     dialog.appendChild(dialogContent);
@@ -452,6 +556,18 @@ async function updateHostPrefix() {
 }
 updateHostPrefix();
 
+try {
+  applyThemeToStaticElements();
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq && mq.addEventListener) {
+      mq.addEventListener('change', () => applyThemeToStaticElements());
+    } else if (mq && mq.addListener) {
+      mq.addListener(() => applyThemeToStaticElements());
+    }
+  }
+} catch (_) {}
+
 
 
 // Advanced options toggle
@@ -487,9 +603,10 @@ document.getElementById('btn-qr-result')?.addEventListener('click', () => {
   
   // Simple QR modal using Google Chart API
   const dialog = document.createElement('div');
-  dialog.style = 'position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center;';
+  const c = themeColors();
+  dialog.style = `position:fixed; inset:0; background:${c.overlay}; display:flex; align-items:center; justify-content:center;`;
   const box = document.createElement('div');
-  box.style = 'background:#fff; padding:16px; border-radius:12px; display:grid; gap:10px;';
+  box.style = `background:${c.cardBg}; color:${c.text}; padding:16px; border-radius:12px; display:grid; gap:10px; border:1px solid ${c.border};`;
   const img = document.createElement('img');
   img.src = `https://chart.googleapis.com/chart?cht=qr&chs=160x160&chl=${encodeURIComponent(shortUrl)}`;
   img.width = 160; img.height = 160; img.alt = 'QR';
@@ -600,9 +717,10 @@ function attachInfiniteScroll(listEl) {
 function buildLinkItem(host, link, t) {
   const item = document.createElement('div');
   item.className = 'card';
-  item.style.cssText = 'display:flex; flex-direction:column; padding:12px; gap:8px; cursor:pointer; transition:all 0.15s ease; max-width:100%;';
-  item.addEventListener('mouseenter', () => { item.style.background = '#f8fafc'; item.style.borderColor = '#cbd5e1'; });
-  item.addEventListener('mouseleave', () => { item.style.background = '#fff'; item.style.borderColor = '#e5e7eb'; });
+  const c = themeColors();
+  item.style.cssText = `display:flex; flex-direction:column; padding:12px; gap:8px; cursor:pointer; transition:all 0.15s ease; max-width:100%; background:${c.cardBg}; border:1px solid ${c.border}; color:${c.text};`;
+  item.addEventListener('mouseenter', () => { item.style.background = c.listItemHover; item.style.borderColor = c.borderSoft; });
+  item.addEventListener('mouseleave', () => { item.style.background = c.cardBg; item.style.borderColor = c.border; });
 
   // Top section with icon, content, and action buttons
   const topSection = document.createElement('div');
@@ -613,7 +731,7 @@ function buildLinkItem(host, link, t) {
   
   // Favicon
   const faviconContainer = document.createElement('div');
-  faviconContainer.style.cssText = 'display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; bg-secondary; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:#f3f4f6;';
+  faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${isDarkMode() ? '#2a2d34' : '#f3f4f6'};`;
 
        const favicon = document.createElement('img');
   favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}`;
@@ -632,30 +750,30 @@ function buildLinkItem(host, link, t) {
   shortUrlRow.style.cssText = 'display:flex; align-items:center;';
   
   const shortUrl = document.createElement('div');
-  shortUrl.style.cssText = 'font-weight:bold; line-height:1.25; truncate; text-md; color:#111827; font-size:14px;';
+  shortUrl.style.cssText = `font-weight:bold; line-height:1.25; truncate; text-md; color:${c.text}; font-size:14px;`;
   shortUrl.textContent = `${link.slug}`;
   
   const copyBtn = document.createElement('button');
   copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
-  copyBtn.style.cssText = 'border:none; background:transparent; color:#6b7280; cursor:pointer; padding:4px; margin-left:4px; border-radius:4px; transition:all 0.2s ease;';
+  copyBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; margin-left:4px; border-radius:4px; transition:all 0.2s ease;`;
   copyBtn.title = chrome.i18n.getMessage('copy') || 'Copy';
   copyBtn.addEventListener('mouseenter', () => {
-    copyBtn.style.background = '#f3f4f6';
-    copyBtn.style.color = '#374151';
+    copyBtn.style.background = c.hover;
+    copyBtn.style.color = c.textSecondary;
   });
   copyBtn.addEventListener('mouseleave', () => {
     copyBtn.style.background = 'transparent';
-    copyBtn.style.color = '#6b7280';
+    copyBtn.style.color = c.textMuted;
   });
   copyBtn.onclick = async (e) => {
     e.stopPropagation();
     try {
       await navigator.clipboard.writeText(`${host}${link.slug}`);
       copyBtn.style.background = '#10b981';
-      copyBtn.style.color = 'white';
+      copyBtn.style.color = '#ffffff';
       setTimeout(() => {
         copyBtn.style.background = 'transparent';
-        copyBtn.style.color = '#6b7280';
+        copyBtn.style.color = c.textMuted;
       }, 1000);
     } catch (_) {}
   };
@@ -664,7 +782,7 @@ function buildLinkItem(host, link, t) {
   shortUrlRow.appendChild(copyBtn);
   
   const description = document.createElement('p');
-  description.style.cssText = 'text-sm; truncate; color:#6b7280; margin:0; font-size:13px;';
+  description.style.cssText = `text-sm; truncate; color:${c.textMuted}; margin:0; font-size:13px;`;
   description.textContent = link.comment || '';
   
   content.appendChild(shortUrlRow);
@@ -679,15 +797,15 @@ function buildLinkItem(host, link, t) {
   
   const qrBtn = document.createElement('button');
   qrBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"></rect><rect width="5" height="5" x="16" y="3" rx="1"></rect><rect width="5" height="5" x="3" y="16" rx="1"></rect><path d="M21 16h-3a2 2 0 0 0-2 2v3"></path><path d="M21 21v.01"></path><path d="M12 7v3a2 2 0 0 1-2 2H7"></path><path d="M3 12h.01"></path><path d="M12 3h.01"></path><path d="M12 16v.01"></path><path d="M16 12h1"></path><path d="M21 12v.01"></path><path d="M12 21v-1"></path></svg>';
-  qrBtn.style.cssText = 'border:none; background:transparent; color:#6b7280; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s ease;';
+  qrBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s ease;`;
   qrBtn.title = chrome.i18n.getMessage('qrCode') || 'QR Code';
   qrBtn.addEventListener('mouseenter', () => {
-    qrBtn.style.background = '#f3f4f6';
-    qrBtn.style.color = '#374151';
+    qrBtn.style.background = c.hover;
+    qrBtn.style.color = c.textSecondary;
   });
   qrBtn.addEventListener('mouseleave', () => {
     qrBtn.style.background = 'transparent';
-    qrBtn.style.color = '#6b7280';
+    qrBtn.style.color = c.textMuted;
   });
         qrBtn.onclick = async (e) => {
           e.stopPropagation();
@@ -714,17 +832,17 @@ function buildLinkItem(host, link, t) {
               try {
                 // Create QR modal overlay
                 const overlay = document.createElement('div');
-                overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center;';
+                overlay.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:${c.overlay}; z-index:1000; display:flex; align-items:center; justify-content:center;`;
                 
                 const modal = document.createElement('div');
-                modal.style.cssText = 'background:white; padding:30px; border-radius:12px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); text-align:center; max-width:300px;';
+                modal.style.cssText = `background:${c.cardBg}; color:${c.text}; padding:30px; border-radius:12px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); text-align:center; width:300px; border:1px solid ${c.border};`;
                 
                 modal.innerHTML = `
-                  <canvas id="qrCanvas" width="128" height="128" style="width:128px; height:128px; border:1px solid #e5e7eb; border-radius:8px; margin:0 auto; display:block;"></canvas>
-                  <div style="margin-top:15px; color:#6b7280; font-size:12px; word-break:break-all; line-height:1.4;">${host}${link.slug}</div>
+                  <canvas id="qrCanvas" width="128" height="128" style="width:128px; height:128px; border:1px solid ${c.border}; border-radius:8px; margin:0 auto; display:block;"></canvas>
+                  <div style="margin-top:15px; color:${c.textMuted}; font-size:12px; word-break:break-all; line-height:1.4;">${host}${link.slug}</div>
                   <div style="margin-top:15px; display:flex; gap:8px; justify-content:center;">
-                    <button id="downloadQR" style="padding:8px 16px; border:none; border-radius:6px; background:#3b82f6; color:white; cursor:pointer; font-size:14px;">${chrome.i18n.getMessage('download') || 'Download'}</button>
-                    <button id="closeQR" style="padding:8px 16px; border:none; border-radius:6px; background:#6b7280; color:white; cursor:pointer; font-size:14px;">${chrome.i18n.getMessage('close') || 'Close'}</button>
+                    <button id="downloadQR" style="padding:8px 16px; border:none; border-radius:6px; background:#3b82f6; color:#ffffff; cursor:pointer; font-size:14px;">${chrome.i18n.getMessage('download') || 'Download'}</button>
+                    <button id="closeQR" style="padding:8px 16px; border:none; border-radius:6px; background:${c.primary}; color:#ffffff; cursor:pointer; font-size:14px;">${chrome.i18n.getMessage('close') || 'Close'}</button>
                   </div>
                 `;
                 
@@ -789,11 +907,11 @@ function buildLinkItem(host, link, t) {
   });
   
   const menu = document.createElement('div');
-  menu.style.cssText = 'position:absolute; top:100%; right:0; background:white; border:1px solid #e5e7eb; border-radius:6px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); z-index:10; display:none; min-width:120px;';
+  menu.style.cssText = `position:absolute; top:100%; right:0; background:${c.cardBg}; color:${c.text}; border:1px solid ${c.border}; border-radius:6px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); z-index:10; display:none; min-width:120px;`;
 
        const editBtn = document.createElement('button');
   editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></svg>${chrome.i18n.getMessage('edit') || 'Edit'}`;
-  editBtn.style.cssText = 'width:100%; padding:8px 12px; border:none; background:transparent; text-align:left; cursor:pointer; font-size:12px; display:flex; align-items:center;';
+  editBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; color:${c.text}; text-align:left; cursor:pointer; font-size:12px; display:flex; align-items:center;`;
   editBtn.onclick = (e) => {
     e.stopPropagation();
     menu.style.display = 'none';
@@ -802,7 +920,7 @@ function buildLinkItem(host, link, t) {
 
        const deleteBtn = document.createElement('button');
   deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7"></path><path d="m5 11 9 9"></path></svg>${chrome.i18n.getMessage('delete') || 'Delete'}`;
-  deleteBtn.style.cssText = 'width:100%; padding:8px 12px; border:none; background:transparent; text-align:left; cursor:pointer; font-size:12px; color:#dc2626; display:flex; align-items:center;';
+  deleteBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; text-align:left; cursor:pointer; font-size:12px; color:#dc2626; display:flex; align-items:center;`;
   deleteBtn.onclick = (e) => {
     e.stopPropagation();
     menu.style.display = 'none';
@@ -833,7 +951,7 @@ function buildLinkItem(host, link, t) {
   createdDate.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; color: rgb(107, 114, 128);"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M10 16h4"></path><path d="M12 14v4"></path></svg>${formatDateTime(link.createdAt)}`;
   
   const separator1 = document.createElement('div');
-  separator1.style.cssText = 'shrink-0; background:#e5e7eb; width:1px; height:100%;';
+  separator1.style.cssText = `shrink-0; background:${c.separator}; width:1px; height:100%;`;
   
   const expiresDate = document.createElement('span');
   expiresDate.style.cssText = 'display:inline-flex; align-items:center; line-height:1.25; whitespace:nowrap;';
@@ -844,13 +962,13 @@ function buildLinkItem(host, link, t) {
   }
   
   const separator2 = document.createElement('div');
-  separator2.style.cssText = 'shrink-0; background:#e5e7eb; width:1px; height:100%;';
+  separator2.style.cssText = `shrink-0; background:${c.separator}; width:1px; height:100%;`;
   if (!link.expiration) {
     separator2.style.display = 'none';
   }
   
   const longUrl = document.createElement('span');
-  longUrl.style.cssText = 'color:#6b7280; word-break:break-all; line-height:1.2; max-height:2.4em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; font-size:12px;';
+  longUrl.style.cssText = `color:${c.textMuted}; word-break:break-all; line-height:1.2; max-height:2.4em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; font-size:12px;`;
   longUrl.textContent = link.url;
   
   bottomSection.appendChild(createdDate);
@@ -999,10 +1117,11 @@ async function editLink(link) {
 async function deleteLink(slug) {
   // Create a modern confirmation dialog
   const dialog = document.createElement('div');
-  dialog.style = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;';
+  const c = themeColors();
+  dialog.style = `position:fixed; top:0; left:0; right:0; bottom:0; background:${c.overlay}; display:flex; align-items:center; justify-content:center; z-index:1000;`;
   
   const dialogContent = document.createElement('div');
-  dialogContent.style = 'background:#fff; border-radius:12px; padding:20px; max-width:300px; margin:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2);';
+  dialogContent.style = `background:${c.cardBg}; color:${c.text}; border-radius:12px; padding:20px; margin:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); border:1px solid ${c.border};`;
   
   const tDeleteLink = chrome.i18n.getMessage('deleteLink') || 'Delete Link';
   const tConfirmDelete = chrome.i18n.getMessage('confirmDelete') || 'Are you sure you want to delete';
@@ -1011,10 +1130,10 @@ async function deleteLink(slug) {
   const tDelete = chrome.i18n.getMessage('delete') || 'Delete';
 
   dialogContent.innerHTML = `
-    <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#111827;">${tDeleteLink}</div>
-    <div style="color:#6b7280; font-size:14px; margin-bottom:20px;">${tConfirmDelete} "${slug}"${tConfirmDeleteSuffix}</div>
+    <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:${c.text};">${tDeleteLink}</div>
+    <div style="color:${c.textMuted}; font-size:14px; margin-bottom:20px; text-align:center;">${tConfirmDelete} "${slug}"${tConfirmDeleteSuffix}</div>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
-      <button id="cancel-delete" style="padding:8px 16px; border:1px solid #d1d5db; border-radius:8px; background:#fff; color:#374151; cursor:pointer; font-size:14px;">${tCancel}</button>
+      <button id="cancel-delete" style="padding:8px 16px; border:1px solid ${c.borderSoft}; border-radius:8px; background:${c.secondary}; color:${c.textSecondary}; cursor:pointer; font-size:14px;">${tCancel}</button>
       <button id="confirm-delete" style="padding:8px 16px; border:1px solid #dc2626; border-radius:8px; background:#dc2626; color:#fff; cursor:pointer; font-size:14px;">${tDelete}</button>
     </div>
   `;
@@ -1082,9 +1201,16 @@ function switchTab(name) {
     if (!btn || !panel) continue;
     const active = t === name;
     panel.style.display = active ? (t === 'links' ? 'grid' : 'block') : 'none';
-    btn.style.background = active ? '#111827' : 'transparent';
-    btn.style.color = active ? '#fff' : '#111827';
+    const c = themeColors();
+    if (active) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+    btn.style.background = active ? c.primary : 'transparent';
+    btn.style.color = active ? '#fff' : c.textMuted;
   }
+  applyThemeToStaticElements();
 }
 
 document.getElementById('tab-create')?.addEventListener('click', async () => {
@@ -1337,7 +1463,7 @@ function drawSparkline(canvas, values, labels = []) {
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
   if (!values || !values.length) {
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = isDarkMode() ? '#9aa1ac' : '#94a3b8';
     ctx.fillText('No data', 8, h/2);
     return;
   }
@@ -1345,7 +1471,7 @@ function drawSparkline(canvas, values, labels = []) {
   const step = w / (values.length - 1 || 1);
 
   // base path
-  ctx.strokeStyle = '#111827';
+  ctx.strokeStyle = themeColors().chartStroke;
   ctx.lineWidth = 2;
   ctx.beginPath();
   values.forEach((v, i) => {
@@ -1356,7 +1482,7 @@ function drawSparkline(canvas, values, labels = []) {
   ctx.stroke();
   // fill under
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
-  gradient.addColorStop(0, 'rgba(17,24,39,0.15)');
+  gradient.addColorStop(0, themeColors().chartFillTop);
   gradient.addColorStop(1, 'rgba(17,24,39,0)');
   ctx.fillStyle = gradient;
   ctx.lineTo(w, h);
@@ -1398,14 +1524,14 @@ function drawSparkline(canvas, values, labels = []) {
       const x = idx * step;
       const y = h - (values[idx] / max) * (h - 4) - 2;
       // crosshair
-      ctx.strokeStyle = 'rgba(17,24,39,0.25)';
+      ctx.strokeStyle = isDarkMode() ? 'rgba(229,231,235,0.25)' : 'rgba(17,24,39,0.25)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, 0); ctx.lineTo(x, h);
       ctx.moveTo(0, y); ctx.lineTo(w, y);
       ctx.stroke();
       // point
-      ctx.fillStyle = '#111827';
+      ctx.fillStyle = themeColors().chartStroke;
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI*2);
       ctx.fill();
@@ -1446,13 +1572,13 @@ function drawSparklineBase(canvas, values) {
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
   if (!values || !values.length) {
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = isDarkMode() ? '#9aa1ac' : '#94a3b8';
     ctx.fillText('No data', 8, h/2);
     return;
   }
   const max = Math.max(...values) || 1;
   const step = w / (values.length - 1 || 1);
-  ctx.strokeStyle = '#111827';
+  ctx.strokeStyle = themeColors().chartStroke;
   ctx.lineWidth = 2;
   ctx.beginPath();
   values.forEach((v, i) => {
@@ -1462,7 +1588,7 @@ function drawSparklineBase(canvas, values) {
   });
   ctx.stroke();
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
-  gradient.addColorStop(0, 'rgba(17,24,39,0.15)');
+  gradient.addColorStop(0, themeColors().chartFillTop);
   gradient.addColorStop(1, 'rgba(17,24,39,0)');
   ctx.fillStyle = gradient;
   ctx.lineTo(w, h);

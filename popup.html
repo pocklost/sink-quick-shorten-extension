@@ -29,6 +29,25 @@
       label.section-desc { display:block; margin-top:8px; }
       .list-item { border:1px solid #e5e7eb; border-radius:12px; padding:10px; cursor:pointer; background:#fff; }
       .list-item:hover { background:#f9fafb; }
+      @media (prefers-color-scheme: dark) {
+        html, body { color: #f1f1f1; background: #0F0F0F !important; }
+        .card { background: #181A20 !important; border-color: #23262F !important; }
+        .input { background: #14151A !important; color: #fff !important; border-color: #23262F !important; }
+        .input.error { border-color:#b91c1c !important; }
+        .btn { background: #23262F !important; color: #fff !important; border-color: #393B42 !important; }
+        .btn.secondary { background: #282a36 !important; color: #f1f1f1 !important; border-color: #222430 !important; }
+        .tab { background:transparent; color:#c1c1c1; }
+        .tab.active { background: #393B42 !important; color: #fff !important; }
+        .metric .value, .metric { color:#fff !important; }
+        .metric .label { color: #a1a1aa !important; }
+        .muted { color: #888 !important; }
+        .list-item { background: #23262F !important; color: #fff !important; border-color: #393B42 !important; }
+        .list-item:hover { background: #181A20 !important; }
+        .section-title { color:#f1f1f1; }
+        .section-desc { color:#aaa !important; }
+        #panel-create, #panel-links, #panel-analytics, #panel-settings { background: #181A20 !important; }
+		div#links { background: #0F0F0F; }
+      }
     </style>
   </head>
   <body>
@@ -48,7 +67,7 @@
             <div id="label-short-key" style="font-size:12px; color:#64748b; font-weight:600;">Short Key</div>
             <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; min-width:0;">
               <div style="display:flex; align-items:center; padding:10px 12px; border:1px solid #e5e7eb; border-radius:12px; background:#f9fafb; min-width:0;">
-                <span id="host-prefix" style="font-weight:600; color:#111827;">https://example.com/</span><input id="input-slug" class="input" style="border:none; background:transparent; padding:0; margin-left:0; flex:2; min-width:0;" />
+                <span id="host-prefix" style="font-weight:600; color:#111827;">https://example.com/</span><input id="input-slug" class="input" style="border:none; background:#0f1115; padding:0; margin-left:0; flex:2; min-width:0;" />
               </div>
               <button id="generate-slug" class="btn secondary" style="padding:9px 12px; font-size:12px; min-width:84px; white-space:nowrap;">Random</button>
             </div>
