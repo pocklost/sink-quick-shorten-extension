@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "Sink でクイック短縮"
    },
+  "supportDev": {
+    "message": "開発者を支援"
+  },
+  "supportDevDesc": {
+    "message": "コーヒーをおごってください ☕"
+  },
+  "supportDevAction": {
+    "message": "開く"
+  },
    "copied": {
       "message": "コピーしました"
    },

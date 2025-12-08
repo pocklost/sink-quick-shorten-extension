@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "Raccourci rapide avec Sink"
    },
+  "supportDev": {
+    "message": "Soutenir le développeur"
+  },
+  "supportDevDesc": {
+    "message": "Offrez-moi un café ☕"
+  },
+  "supportDevAction": {
+    "message": "Ouvrir"
+  },
    "copied": {
       "message": "Copié"
    },

@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "使用 Sink 快速缩短"
    },
+  "supportDev": {
+    "message": "支持开发者"
+  },
+  "supportDevDesc": {
+    "message": "点我请杯咖啡 ☕"
+  },
+  "supportDevAction": {
+    "message": "前往"
+  },
    "copied": {
       "message": "已复制"
    },

@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "Rút gọn nhanh với Sink"
    },
+  "supportDev": {
+    "message": "Ủng hộ nhà phát triển"
+  },
+  "supportDevDesc": {
+    "message": "Mời tôi một ly cà phê ☕"
+  },
+  "supportDevAction": {
+    "message": "Mở"
+  },
    "copied": {
       "message": "Đã sao chép"
    },

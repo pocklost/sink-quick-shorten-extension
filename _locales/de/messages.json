@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "Schnellkürzen mit Sink"
    },
+  "supportDev": {
+    "message": "Entwickler unterstützen"
+  },
+  "supportDevDesc": {
+    "message": "Spendier mir einen Kaffee ☕"
+  },
+  "supportDevAction": {
+    "message": "Öffnen"
+  },
    "copied": {
       "message": "Kopiert"
    },

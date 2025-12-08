@@ -35,6 +35,15 @@
    "contextMenuTitle": {
       "message": "Quick Shorten with Sink"
    },
+  "supportDev": {
+    "message": "Support the developer"
+  },
+  "supportDevDesc": {
+    "message": "Buy me a coffee ☕"
+  },
+  "supportDevAction": {
+    "message": "Open"
+  },
    "copied": {
       "message": "Copied"
    },
