@@ -38,6 +38,9 @@
    "copied": {
       "message": "コピーしました"
    },
+  "copy": {
+    "message": "コピー"
+  },
    "createCopy": {
       "message": "作成してコピー"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "読み込みに失敗しました"
+   },
+   "goToSettings": {
+      "message": "設定に移動"
    },
    "host": {
       "message": "ホスト"

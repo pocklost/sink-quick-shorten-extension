@@ -2,7 +2,6 @@ chrome.action.onClicked.addListener(async (tab) => {
   try {
     const { host } = await chrome.storage.local.get({ host: '' });
     if (!host || !host.trim()) {
-      // Open popup instead if no host configured
       chrome.action.openPopup();
       return;
     }
@@ -14,7 +13,6 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-// Context menu integration
 const MENU_ID = 'sink_quick_shorten_menu';
 
 async function readSettings() {
@@ -33,7 +31,6 @@ function ensureContextMenuCreated() {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  // Initialize default settings on first install/update
   chrome.storage.local.get({ autoDetectUrl: undefined, showContextMenu: undefined }, (cfg) => {
     const init = {};
     if (typeof cfg.autoDetectUrl === 'undefined') init.autoDetectUrl = true;
@@ -53,18 +50,15 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     sendResponse && sendResponse({ ok: true });
     return true;
   } else if (msg && msg.type === 'apiRequest') {
-    // Handle API requests from popup to avoid CORS issues
     handleApiRequest(msg, sendResponse);
-    return true; // Indicates we will send a response asynchronously
+    return true;
   }
-  // If no handler found, send an error response
   if (sendResponse) {
     sendResponse({ success: false, error: 'Unknown message type' });
   }
   return true;
 });
 
-// Handle API requests from popup
 async function handleApiRequest(msg, sendResponse) {
   let responseSent = false;
   
@@ -161,14 +155,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
     const { host, token } = await readSettings();
     if (!host || !host.trim() || !token || token.length < 8) {
-      // Open the popup directly without alert
       try { chrome.action.openPopup(); } catch (_) {}
       return;
     }
     const pageUrl = info.linkUrl || info.pageUrl || (tab && tab.url) || '';
     if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return;
 
-    // Generate a simple random slug
     const slug = (() => {
       const chars = '23456789abcdefghjkmnpqrstuvwxyz';
       let s = '';
@@ -190,14 +182,92 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const data = await resp.json();
     const shortLink = data?.shortLink || `${host}${slug}`;
 
-    // Copy to clipboard by executing script in the page context
     if (tab && tab.id) {
+      const i18n = {
+        title: chrome.i18n.getMessage('createdAndCopied') || 'Short link created',
+        copy: chrome.i18n.getMessage('copy') || 'Copy',
+        close: chrome.i18n.getMessage('close') || 'Close',
+        copied: chrome.i18n.getMessage('copied') || 'Copied',
+        copyFailed: chrome.i18n.getMessage('failed') || 'Failed'
+      };
       try {
         await chrome.scripting.executeScript({
           target: { tabId: tab.id },
-          args: [shortLink],
-          func: (text) => {
+          args: [shortLink, i18n],
+          func: (text, i18nText) => {
             try { navigator.clipboard.writeText(text); } catch (_) {}
+            try {
+              const existing = document.getElementById('sink-toast');
+              if (existing) existing.remove();
+
+              const toast = document.createElement('div');
+              toast.id = 'sink-toast';
+              toast.style.cssText = `
+                position:fixed; right:16px; bottom:16px; z-index:2147483647;
+                background:#1A1A1A; color:#f1f1f1; border:1px solid #333;
+                border-radius:12px; padding:12px 14px; min-width:220px;
+                box-shadow:0 10px 25px rgba(0,0,0,0.35); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+                display:flex; flex-direction:column; gap:8px; animation:fadeInToast 150ms ease;
+              `;
+
+              const title = document.createElement('div');
+              title.textContent = i18nText?.title || 'Short link created';
+              title.style.cssText = 'font-size:14px; font-weight:600;';
+
+              const linkRow = document.createElement('div');
+              linkRow.textContent = text;
+              linkRow.style.cssText = 'font-size:12px; color:#cbd5e1; word-break:break-all;';
+
+              const btnRow = document.createElement('div');
+              btnRow.style.cssText = 'display:flex; gap:8px; justify-content:flex-end;';
+
+              const copyBtn = document.createElement('button');
+              copyBtn.textContent = i18nText?.copy || 'Copy';
+              copyBtn.style.cssText = `
+                padding:8px 12px; border-radius:10px; border:1px solid #333;
+                background:#2A2A2A; color:#fff; cursor:pointer; font-size:13px;
+                transition:all .15s ease;
+              `;
+              copyBtn.onmouseenter = () => { copyBtn.style.filter = 'brightness(1.1)'; };
+              copyBtn.onmouseleave = () => { copyBtn.style.filter = 'brightness(1)'; };
+              copyBtn.onclick = async () => {
+                try {
+                  await navigator.clipboard.writeText(text);
+                  copyBtn.textContent = i18nText?.copied || 'Copied';
+                  setTimeout(() => { copyBtn.textContent = i18nText?.copy || 'Copy'; }, 1200);
+                } catch (_) {
+                  copyBtn.textContent = i18nText?.copyFailed || 'Failed';
+                }
+              };
+
+              const closeBtn = document.createElement('button');
+              closeBtn.textContent = i18nText?.close || 'Close';
+              closeBtn.style.cssText = `
+                padding:8px 10px; border-radius:10px; border:1px solid #333;
+                background:#1f1f1f; color:#e5e7eb; cursor:pointer; font-size:13px;
+                transition:all .15s ease;
+              `;
+              closeBtn.onclick = () => toast.remove();
+
+              btnRow.appendChild(closeBtn);
+              btnRow.appendChild(copyBtn);
+
+              toast.appendChild(title);
+              toast.appendChild(linkRow);
+              toast.appendChild(btnRow);
+
+              const style = document.createElement('style');
+              style.textContent = `
+                @keyframes fadeInToast { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+              `;
+              toast.appendChild(style);
+
+              document.body.appendChild(toast);
+
+              setTimeout(() => { toast.remove(); }, 12000);
+            } catch (e) {
+              console.error('toast inject failed', e);
+            }
           },
         });
       } catch (_) {}

@@ -38,6 +38,9 @@
    "copied": {
       "message": "已複製"
    },
+  "copy": {
+    "message": "複製"
+  },
    "createCopy": {
       "message": "建立並複製"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "載入失敗"
+   },
+   "goToSettings": {
+      "message": "前往設定"
    },
    "host": {
       "message": "主機"

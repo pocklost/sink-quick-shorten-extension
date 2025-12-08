@@ -38,6 +38,9 @@
    "copied": {
       "message": "已复制"
    },
+  "copy": {
+    "message": "复制"
+  },
    "createCopy": {
       "message": "创建并复制"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "加载失败"
+   },
+   "goToSettings": {
+      "message": "前往设置"
    },
    "host": {
       "message": "主机"

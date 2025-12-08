@@ -38,6 +38,9 @@
    "copied": {
       "message": "Copié"
    },
+  "copy": {
+    "message": "Copier"
+  },
    "createCopy": {
       "message": "Créer & Copier"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "Échec du chargement"
+   },
+   "goToSettings": {
+      "message": "Aller aux paramètres"
    },
    "host": {
       "message": "Hôte"

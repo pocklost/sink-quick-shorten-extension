@@ -9,39 +9,44 @@
       html,body{margin:0;padding:0}
       body{width:360px;min-height:120px;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#0f172a;background:#ffffff}
       .container{display:grid;gap:12px;width:100%;padding:14px}
-      .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:12px;padding:4px}
-      .tab{padding:8px 10px;border:none;border-radius:10px;background:transparent;color:#6b7280;cursor:pointer;text-align:center}
-      .tab.active{background:#111827;color:#ffffff}
-      .card{border:1px solid #e5e7eb;border-radius:14px;background:#ffffff;padding:12px}
+      .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:12px;padding:4px;will-change:contents}
+      .tab{padding:8px 10px;border:none;border-radius:10px;background:transparent;color:#6b7280;cursor:pointer;text-align:center;transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);will-change:background-color,color,transform;transform:translateZ(0)}
+      .tab:hover{background:rgba(17,24,39,0.1);transform:scale(1.02) translateZ(0)}
+      .tab.active{background:#111827;color:#ffffff;transform:scale(1.05) translateZ(0)}
+      .card{border:1px solid #e5e7eb;border-radius:14px;background:#ffffff;padding:12px;transition:all .2s ease;will-change:transform;transform:translateZ(0)}
       .row{display:grid;gap:6px}
       .stack{display:grid;gap:12px}
       .inline{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;min-width:0}
-      .wrap{display:flex;align-items:center;gap:0;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;min-width:0}
-      .label{font-size:12px;color:#64748b;font-weight:600}
+      .wrap{display:flex;align-items:center;gap:0;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;min-width:0;transition:all .2s ease}
+      .label{font-size:12px;color:#888;font-weight:600}
       .muted{font-size:12px;color:#6b7280}
-      .input{width:100%;min-width:0;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;outline:none;background:#ffffff}
-      .input.error{border-color:#ef4444}
-      .btn{padding:10px 12px;border-radius:12px;border:1px solid #e5e7eb;background:#111827;color:#ffffff;cursor:pointer;transition:filter .15s ease}
-      .btn:hover{filter:brightness(1.05)}
+      .input{width:100%;min-width:0;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;outline:none;background:#ffffff;transition:all .2s ease;will-change:border-color,box-shadow}
+      .input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+      .input.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,0.1)}
+      .btn{padding:10px 12px;border-radius:12px;border:1px solid #e5e7eb;background:#111827;color:#ffffff;cursor:pointer;transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);will-change:transform;transform:translateZ(0)}
+      .btn:hover{filter:brightness(1.05);transform:translateY(-1px) translateZ(0);box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+      .btn:active{transform:translateY(0) translateZ(0)}
       .btn.secondary{background:#ffffff;color:#111827}
-      .list-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;background:#ffffff}
+      .list-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;background:#ffffff;transition:all .2s ease;will-change:transform;transform:translateZ(0)}
       .metrics{display:flex;gap:10px;font-size:12px;color:#334155}
       .metric{display:grid;gap:2px}
-      .metric .label{color:#64748b}
+      .metric .label{color:#888}
       .metric .value{font-size:16px;font-weight:600;color:#111827}
-      #links{display:grid;gap:8px;overflow:auto;padding:0 2px;max-height:360px}
+      #links{display:grid;gap:10px;overflow:auto;padding:1.5px 2px;max-height:360px;scroll-behavior:smooth;will-change:scroll-position}
       canvas{width:100%;height:60px}
+      @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
       @media (prefers-color-scheme: dark){
         body{color:#f1f1f1;background:#0F0F0F}
-        .tabs{background:#111317;border-color:#23262F}
+        .tabs{background:#1A1A1A;border-color:#252525}
         .tab{color:#c1c1c1}
-        .tab.active{background:#393B42;color:#ffffff}
-        .card{background:#181A20;border-color:#23262F}
-        .wrap{background:#14151A;border-color:#23262F}
-        .input{background:#14151A;color:#ffffff;border-color:#23262F}
-        .btn{background:#23262F;color:#ffffff;border-color:#393B42}
-        .btn.secondary{background:#282a36;color:#f1f1f1;border-color:#222430}
-        .list-item{background:#23262F;color:#ffffff;border-color:#393B42}
+        .tab.active{background:#333333;color:#ffffff}
+        .card{background:#1A1A1A;border-color:#252525}
+        .wrap{background:#1A1A1A;border-color:#252525}
+        .input{background:#1A1A1A;color:#ffffff;border-color:#252525}
+        .input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.2)}
+        .btn{background:#252525;color:#ffffff;border-color:#333333}
+        .btn.secondary{background:#2A2A2A;color:#f1f1f1;border-color:#2F2F2F}
+        .list-item{background:#252525;color:#ffffff;border-color:#333333}
         .muted{color:#888}
         .metric .value{color:#ffffff}
       }
@@ -55,7 +60,7 @@
         <button id="tab-analytics" data-tab="analytics" class="tab">__MSG_titleAnalytics__</button>
         <button id="tab-settings" data-tab="settings" class="tab">__MSG_titleSettings__</button>
       </div>
-      <section id="panel-create" class="stack">
+      <section id="panel-create" class="stack" style="opacity:1;transform:translateY(0);transition:opacity 0.2s ease,transform 0.2s ease">
         <div class="card stack">
           <div class="row">
             <div id="label-short-key" class="label">Short Key</div>
@@ -94,10 +99,10 @@
           </div>
         </div>
       </section>
-      <section id="panel-links" style="display:none">
+      <section id="panel-links" style="display:none;opacity:0;transform:translateY(4px);transition:opacity 0.2s ease,transform 0.2s ease">
         <div id="links"></div>
       </section>
-      <section id="panel-analytics" class="card" style="display:none">
+      <section id="panel-analytics" class="card" style="display:none;opacity:0;transform:translateY(4px);transition:opacity 0.2s ease,transform 0.2s ease">
         <div id="analytics-title" class="label" style="font-size:13px"></div>
         <div class="metrics card" style="margin-top:10px">
           <div class="metric"><div class="label">__MSG_visits__</div><div class="value" id="metric-visits">-</div></div>
@@ -109,7 +114,7 @@
         </div>
         <div id="analytics-error" class="muted" style="margin-top:6px;display:none"></div>
       </section>
-      <section id="panel-settings" class="card" style="display:none">
+      <section id="panel-settings" class="card" style="display:none;opacity:0;transform:translateY(4px);transition:opacity 0.2s ease,transform 0.2s ease">
         <div class="stack">
           <div class="muted">__MSG_settingsDesc__</div>
           <input id="setting-host" class="input" placeholder="https://sink.cool/" aria-label="__MSG_host__" />

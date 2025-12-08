@@ -10,19 +10,19 @@ function themeColors() {
   if (isDarkMode()) {
     return {
       bg: '#0F0F0F',
-      cardBg: '#181A20',
+      cardBg: '#1A1A1A',
       overlay: 'rgba(0,0,0,0.5)',
-      border: '#23262F',
-      borderSoft: '#393B42',
+      border: '#252525',
+      borderSoft: '#333333',
       text: '#f1f1f1',
       textMuted: '#a1a1aa',
       textSecondary: '#c1c1c1',
-      primary: '#393B42',
-      secondary: '#282a36',
-      hover: '#23262F',
-      listItem: '#23262F',
-      listItemHover: '#181A20',
-      separator: '#2f3137',
+      primary: '#333333',
+      secondary: '#2A2A2A',
+      hover: '#252525',
+      listItem: '#252525',
+      listItemHover: '#1A1A1A',
+      separator: '#2F2F2F',
       chartStroke: '#e5e7eb',
       chartFillTop: 'rgba(229,231,235,0.2)'
     };
@@ -58,7 +58,7 @@ function applyThemeToStaticElements() {
     wrap.style.padding = '10px 12px';
     wrap.style.border = `1px solid ${c.border}`;
     wrap.style.borderRadius = '12px';
-    wrap.style.background = isDarkMode() ? '#14151A' : '#f9fafb';
+    wrap.style.background = isDarkMode() ? '#1A1A1A' : '#f9fafb';
     wrap.style.minWidth = '0';
   }
   if (prefix) {
@@ -77,7 +77,7 @@ function applyThemeToStaticElements() {
   const tabsEl = document.querySelector('.tabs');
   if (tabsEl) {
     const cWrap = themeColors();
-    tabsEl.style.background = isDarkMode() ? '#111317' : '#f3f4f6';
+    tabsEl.style.background = isDarkMode() ? '#1A1A1A' : '#f3f4f6';
     tabsEl.style.border = `1px solid ${cWrap.border}`;
     tabsEl.style.borderRadius = '12px';
     tabsEl.style.padding = '4px';
@@ -94,9 +94,9 @@ function applyThemeToStaticElements() {
   style.id = 'dynamic-scrollbar-style';
   style.textContent = `
     #links::-webkit-scrollbar{width:10px;height:10px}
-    #links::-webkit-scrollbar-track{background:${isDarkMode() ? '#111317' : '#f1f5f9'};border-radius:8px}
-    #links::-webkit-scrollbar-thumb{background:${isDarkMode() ? '#2a2d34' : '#cbd5e1'};border-radius:8px;border:2px solid ${isDarkMode() ? '#111317' : '#f1f5f9'}}
-    #links::-webkit-scrollbar-thumb:hover{background:${isDarkMode() ? '#3a3e47' : '#94a3b8'}}
+    #links::-webkit-scrollbar-track{background:${isDarkMode() ? '#1A1A1A' : '#f1f5f9'};border-radius:8px}
+    #links::-webkit-scrollbar-thumb{background:${isDarkMode() ? '#2A2A2A' : '#cbd5e1'};border-radius:8px;border:2px solid ${isDarkMode() ? '#1A1A1A' : '#f1f5f9'}}
+    #links::-webkit-scrollbar-thumb:hover{background:${isDarkMode() ? '#3A3A3A' : '#94a3b8'}}
   `;
   document.head.appendChild(style);
 }
@@ -104,7 +104,6 @@ function applyThemeToStaticElements() {
 async function jumpToSink() {
   const { host } = await readSettings();
   if (!host || !host.trim()) {
-    // Localized modal prompting to configure host
     await showInfoDialog('Settings', chrome.i18n.getMessage('configureHostFirst') || 'Please configure host in Settings.', [
       { id: 'open-settings', label: 'OK', primary: true }
     ]);
@@ -115,7 +114,6 @@ async function jumpToSink() {
   const target = `${host}dashboard/links`;
   await chrome.tabs.create({ url: target });
 }
-// Simple info dialog (styled like delete dialog)
 async function showInfoDialog(title, message, actions = [{ id: 'ok', label: 'OK', primary: true }]) {
   return new Promise((resolve) => {
     const c = themeColors();
@@ -153,7 +151,6 @@ document.getElementById('open')?.addEventListener('click', async (e) => {
     delete createBtn.dataset.originalSlug;
     await updateButtonText();
     
-    // Restore slug input and random button to normal state
     const slugInput = document.getElementById('input-slug');
     const randomBtn = document.getElementById('generate-slug');
     if (slugInput) {
@@ -174,12 +171,10 @@ document.getElementById('open')?.addEventListener('click', async (e) => {
     document.getElementById('input-expiration').value = '';
     const result = document.getElementById('result');
     result.textContent = '';
-    // Skip one-time autofill and go to a clean Create tab
     skipAutofillOnce = true;
     switchTab('create');
     return;
   }
-  // Not editing: open dashboard
   jumpToSink();
 });
 
@@ -191,25 +186,20 @@ async function getActiveTabUrl() {
 function normalizeHostUrl(url) {
   if (!url || typeof url !== 'string') return '';
   
-  // Remove any trailing paths like /dashboard/links
   let normalized = url.trim();
   
-  // Add protocol if missing
   if (!normalized.match(/^https?:\/\//)) {
     normalized = 'https://' + normalized;
   }
   
-  // Extract just the domain part (protocol + domain)
   try {
     const urlObj = new URL(normalized);
     normalized = `${urlObj.protocol}//${urlObj.hostname}`;
     
-    // Add port if it's not standard
     if (urlObj.port && urlObj.port !== '80' && urlObj.port !== '443') {
       normalized += `:${urlObj.port}`;
     }
     
-    // Ensure it ends with /
     if (!normalized.endsWith('/')) {
       normalized += '/';
     }
@@ -225,13 +215,10 @@ function validateHostUrl(url) {
   
   try {
     const urlObj = new URL(url);
-    // Only allow http and https protocols
     if (!['http:', 'https:'].includes(urlObj.protocol)) return false;
     
-    // Must have a valid hostname
     if (!urlObj.hostname || urlObj.hostname.length < 3) return false;
     
-    // Must have at least one dot (for domain)
     if (!urlObj.hostname.includes('.')) return false;
     
     return true;
@@ -242,8 +229,6 @@ function validateHostUrl(url) {
 
 async function readSettings() {
   const { host, token, autoDetectUrl, showContextMenu } = await chrome.storage.local.get({ host: '', token: '', autoDetectUrl: true, showContextMenu: true });
-  // Toggle hint if token looks valid
-  // removed inline hint banner
   return { host, token, autoDetectUrl, showContextMenu };
 }
 
@@ -299,7 +284,6 @@ async function apiCall(endpoint, method = 'GET', body = null, customHost = null)
   }
 }
 
-//  background script API
 async function apiCallViaBackground(endpoint, method = 'GET', body = null, customHost = null) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -392,26 +376,22 @@ async function createViaAPI() {
        return;
      }
      
-     // Remove error class if URL is valid
      inputUrl.classList.remove('error');
      
      let slug = inputSlug.value.trim();
      const comment = inputComment.value.trim();
      const expiration = inputExpiration.value;
      
-     // Auto-generate random slug if empty
      if (!slug) {
        slug = generateRandomSlug();
-       // Show the generated slug in the input field
        inputSlug.value = slug;
      }
      
     const body = { url, slug };
      if (comment) body.comment = comment;
     if (expiration) {
-      // Convert datetime-local input to Unix timestamp (milliseconds)
       const expirationDate = new Date(expiration);
-      body.expiration = Math.floor(expirationDate.getTime() / 1000); // Convert to seconds
+      body.expiration = Math.floor(expirationDate.getTime() / 1000);
     }
 
     const createBtn = document.getElementById('create');
@@ -432,7 +412,6 @@ async function createViaAPI() {
     if (data?.shortLink) {
       try { await navigator.clipboard.writeText(data.shortLink); } catch (e) {}
       
-      // Show success feedback with animation
       const successFeedback = document.getElementById('success-feedback');
       const successText = document.getElementById('success-text');
       if (successFeedback && successText) {
@@ -443,14 +422,12 @@ async function createViaAPI() {
         successFeedback.style.opacity = '0';
         successFeedback.style.transform = 'translateY(-10px)';
         
-        // Animate in
         requestAnimationFrame(() => {
           successFeedback.style.transition = 'all 0.3s ease';
           successFeedback.style.opacity = '1';
           successFeedback.style.transform = 'translateY(0)';
         });
         
-        // Auto hide after 3 seconds
         setTimeout(() => {
           successFeedback.style.opacity = '0';
           successFeedback.style.transform = 'translateY(-10px)';
@@ -460,7 +437,6 @@ async function createViaAPI() {
         }, 3000);
       }
       
-      // Show result area with QR button
       const resultArea = document.getElementById('result-area');
       if (resultArea) {
         resultArea.style.display = 'block';
@@ -470,13 +446,11 @@ async function createViaAPI() {
       result.textContent = isEditing ? 'Updated successfully' : 'Created successfully (no shortLink returned)';
     }
     
-     // Reset editing state and clear form
      if (isEditing) {
        createBtn.dataset.editing = 'false';
        delete createBtn.dataset.originalSlug;
        await updateButtonText();
        
-       // Restore slug input to normal state
        const slugInput = document.getElementById('input-slug');
        const randomBtn = document.getElementById('generate-slug');
        if (slugInput) {
@@ -491,21 +465,17 @@ async function createViaAPI() {
          randomBtn.title = '';
        }
        
-       // Clear all form fields
        document.getElementById('input-url').value = '';
        document.getElementById('input-slug').value = '';
        document.getElementById('input-comment').value = '';
        document.getElementById('input-expiration').value = '';
-       // Hide result area
        const resultArea = document.getElementById('result-area');
        if (resultArea) resultArea.style.display = 'none';
      } else {
-       // For new creation, clear form and generate new random slug
        document.getElementById('input-url').value = '';
        document.getElementById('input-slug').value = generateRandomSlug();
        document.getElementById('input-comment').value = '';
        document.getElementById('input-expiration').value = '';
-       // Hide result area
        const resultArea = document.getElementById('result-area');
        if (resultArea) resultArea.style.display = 'none';
      }
@@ -515,7 +485,6 @@ async function createViaAPI() {
 }
 
 document.getElementById('create')?.addEventListener('click', createViaAPI);
-// Remove inline settings button since we have tabs now
 document.getElementById('open-options')?.addEventListener('click', async (e) => {
   e.preventDefault();
   if (chrome.runtime.openOptionsPage) {
@@ -523,7 +492,6 @@ document.getElementById('open-options')?.addEventListener('click', async (e) => 
   }
 });
 
-// Generate random slug function
 function generateRandomSlug() {
   const chars = '23456789abcdefghjkmnpqrstuvwxyz';
   let randomSlug = '';
@@ -533,7 +501,6 @@ function generateRandomSlug() {
   return randomSlug;
 }
 
-// Random slug button
 document.getElementById('generate-slug')?.addEventListener('click', () => {
   const slugInput = document.getElementById('input-slug');
   if (slugInput) {
@@ -541,14 +508,12 @@ document.getElementById('generate-slug')?.addEventListener('click', () => {
   }
 });
 
-// Double-click shortcut on slug input
 (() => {
   const slugInput = document.getElementById('input-slug');
   if (!slugInput) return;
   slugInput.addEventListener('dblclick', () => { slugInput.value = generateRandomSlug(); });
 })();
 
-// Update host prefix next to slug based on settings
 async function updateHostPrefix() {
   const { host } = await readSettings();
   const prefix = document.getElementById('host-prefix');
@@ -570,7 +535,6 @@ try {
 
 
 
-// Advanced options toggle
 document.getElementById('toggle-advanced')?.addEventListener('click', async () => {
   const advanced = document.getElementById('advanced-options');
   const toggle = document.getElementById('toggle-advanced');
@@ -580,7 +544,6 @@ document.getElementById('toggle-advanced')?.addEventListener('click', async () =
   await chrome.storage.local.set({ showAdvanced: show });
 });
 
-// Result area buttons
 document.getElementById('btn-copy-result')?.addEventListener('click', async () => {
   const resultArea = document.getElementById('result-area');
   const shortUrl = resultArea?.dataset.shortUrl;
@@ -601,7 +564,6 @@ document.getElementById('btn-qr-result')?.addEventListener('click', () => {
   const shortUrl = resultArea?.dataset.shortUrl;
   if (!shortUrl) return;
   
-  // Simple QR modal using Google Chart API
   const dialog = document.createElement('div');
   const c = themeColors();
   dialog.style = `position:fixed; inset:0; background:${c.overlay}; display:flex; align-items:center; justify-content:center;`;
@@ -632,19 +594,49 @@ let renderLinksSeq = 0;
 async function renderLinks() {
   const mySeq = ++renderLinksSeq;
   const listEl = document.getElementById('links');
-  // Get current language for translations
-  listEl.innerHTML = `<span style="font-size:12px; color:#6b7280;">${chrome.i18n.getMessage('loading') || 'Loading...'}</span>`;
+  const isDark = isDarkMode();
+  const skeletonBg = isDark ? '#252525' : '#f0f0f0';
+  const skeletonHighlight = isDark ? '#2A2A2A' : '#e0e0e0';
+  listEl.innerHTML = `<div style="display:grid;gap:8px;"><div style="height:80px;background:linear-gradient(90deg,${skeletonBg} 25%,${skeletonHighlight} 50%,${skeletonBg} 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px;border:1px solid ${isDark ? '#333333' : '#e5e7eb'};"></div><div style="height:80px;background:linear-gradient(90deg,${skeletonBg} 25%,${skeletonHighlight} 50%,${skeletonBg} 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px;border:1px solid ${isDark ? '#333333' : '#e5e7eb'};"></div></div>`;
   try {
     const { host, token } = await readSettings();
     if (!host || !host.trim()) {
       if (mySeq !== renderLinksSeq) return;
-      listEl.innerHTML = '';
-      await showInfoDialog('Settings', chrome.i18n.getMessage('configureHostFirst') || 'Please configure host in Settings.', [
-        { id: 'open-settings', label: 'OK', primary: true }
-      ]);
+      const c = themeColors();
+      listEl.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;gap:16px;border:1px solid ${c.border};border-radius:14px;background:${c.cardBg};">
+          <div style="width:64px;height:64px;border-radius:50%;background:${isDarkMode() ? '#2A2A2A' : '#f3f4f6'};display:flex;align-items:center;justify-content:center;margin:0 auto;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${c.textMuted}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div style="font-size:16px;font-weight:600;color:${c.text};">
+            ${chrome.i18n.getMessage('configureHostFirst') || 'Please configure host in Settings'}
+          </div>
+          <button id="goto-settings-from-links" style="padding:10px 20px;border-radius:12px;border:1px solid ${c.border};background:${c.primary};color:#ffffff;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.2s ease;margin-top:8px;">
+            ${chrome.i18n.getMessage('goToSettings') || 'Go to Settings'}
+          </button>
+        </div>
+      `;
+      
+      const gotoBtn = document.getElementById('goto-settings-from-links');
+      if (gotoBtn) {
+        gotoBtn.addEventListener('click', () => {
+          switchTab('settings');
+        });
+        gotoBtn.addEventListener('mouseenter', () => {
+          gotoBtn.style.filter = 'brightness(1.1)';
+          gotoBtn.style.transform = 'translateY(-1px)';
+        });
+        gotoBtn.addEventListener('mouseleave', () => {
+          gotoBtn.style.filter = 'brightness(1)';
+          gotoBtn.style.transform = 'translateY(0)';
+        });
+      }
       return;
     }
-    // reset pagination state
     linksCursor = null;
     isLoadingMore = false;
     renderedSlugs.clear();
@@ -658,16 +650,17 @@ async function renderLinks() {
        return;
      }
      
-     // Sort links by creation date (newest first)
      links.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
      
-     listEl.innerHTML = '';
+     const fragment = document.createDocumentFragment();
      for (const link of links) {
       if (renderedSlugs.has(link.slug)) continue;
       renderedSlugs.add(link.slug);
        const item = buildLinkItem(host, link);
-       listEl.appendChild(item);
+       fragment.appendChild(item);
      }
+     listEl.innerHTML = '';
+     listEl.appendChild(fragment);
     attachInfiniteScroll(listEl);
   } catch (e) {
     if (mySeq !== renderLinksSeq) return;
@@ -675,10 +668,23 @@ async function renderLinks() {
   }
 }
 
+function throttle(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
 function attachInfiniteScroll(listEl) {
   if (listEl.dataset.scrollBound === 'true') return;
   listEl.dataset.scrollBound = 'true';
-  listEl.addEventListener('scroll', async () => {
+  
+  const handleScroll = throttle(async () => {
     if (isLoadingMore || !linksCursor) return;
     const nearBottom = listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 40;
     if (!nearBottom) return;
@@ -694,13 +700,15 @@ function attachInfiniteScroll(listEl) {
       const next = (data?.links || []).filter(Boolean);
       linksCursor = data?.cursor || null;
       next.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      const fragment = document.createDocumentFragment();
       for (const link of next) {
         if (renderedSlugs.has(link.slug)) continue;
         renderedSlugs.add(link.slug);
         const { host } = await readSettings();
         const item = buildLinkItem(host, link);
-        listEl.appendChild(item);
+        fragment.appendChild(item);
       }
+      listEl.appendChild(fragment);
     } catch (e) {
       const err = document.createElement('div');
       err.className = 'muted';
@@ -711,16 +719,28 @@ function attachInfiniteScroll(listEl) {
       if (loader.parentElement) loader.parentElement.removeChild(loader);
       isLoadingMore = false;
     }
-  });
+  }, 150);
+  
+  listEl.addEventListener('scroll', handleScroll, { passive: true });
 }
 
 function buildLinkItem(host, link, t) {
   const item = document.createElement('div');
   item.className = 'card';
   const c = themeColors();
-  item.style.cssText = `display:flex; flex-direction:column; padding:12px; gap:8px; cursor:pointer; transition:all 0.15s ease; max-width:100%; background:${c.cardBg}; border:1px solid ${c.border}; color:${c.text};`;
-  item.addEventListener('mouseenter', () => { item.style.background = c.listItemHover; item.style.borderColor = c.borderSoft; });
-  item.addEventListener('mouseleave', () => { item.style.background = c.cardBg; item.style.borderColor = c.border; });
+  item.style.cssText = `display:flex; flex-direction:column; padding:12px; gap:8px; cursor:pointer; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); max-width:100%; background:${c.cardBg}; border:1px solid ${c.border}; color:${c.text}; will-change:transform,background-color,border-color; transform:translateZ(0);`;
+  item.addEventListener('mouseenter', () => { 
+    item.style.background = c.listItemHover; 
+    item.style.borderColor = c.borderSoft; 
+    item.style.transform = 'translateY(-2px) translateZ(0)';
+    item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+  });
+  item.addEventListener('mouseleave', () => { 
+    item.style.background = c.cardBg; 
+    item.style.borderColor = c.border; 
+    item.style.transform = 'translateZ(0)';
+    item.style.boxShadow = 'none';
+  });
 
   // Top section with icon, content, and action buttons
   const topSection = document.createElement('div');
@@ -731,7 +751,7 @@ function buildLinkItem(host, link, t) {
   
   // Favicon
   const faviconContainer = document.createElement('div');
-  faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${isDarkMode() ? '#2a2d34' : '#f3f4f6'};`;
+  faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${isDarkMode() ? '#2A2A2A' : '#f3f4f6'};`;
 
        const favicon = document.createElement('img');
   favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}`;
@@ -755,15 +775,17 @@ function buildLinkItem(host, link, t) {
   
   const copyBtn = document.createElement('button');
   copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
-  copyBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; margin-left:4px; border-radius:4px; transition:all 0.2s ease;`;
+  copyBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; margin-left:4px; border-radius:4px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); will-change:transform,background-color; transform:translateZ(0);`;
   copyBtn.title = chrome.i18n.getMessage('copy') || 'Copy';
   copyBtn.addEventListener('mouseenter', () => {
     copyBtn.style.background = c.hover;
     copyBtn.style.color = c.textSecondary;
+    copyBtn.style.transform = 'scale(1.1) translateZ(0)';
   });
   copyBtn.addEventListener('mouseleave', () => {
     copyBtn.style.background = 'transparent';
     copyBtn.style.color = c.textMuted;
+    copyBtn.style.transform = 'translateZ(0)';
   });
   copyBtn.onclick = async (e) => {
     e.stopPropagation();
@@ -797,15 +819,17 @@ function buildLinkItem(host, link, t) {
   
   const qrBtn = document.createElement('button');
   qrBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"></rect><rect width="5" height="5" x="16" y="3" rx="1"></rect><rect width="5" height="5" x="3" y="16" rx="1"></rect><path d="M21 16h-3a2 2 0 0 0-2 2v3"></path><path d="M21 21v.01"></path><path d="M12 7v3a2 2 0 0 1-2 2H7"></path><path d="M3 12h.01"></path><path d="M12 3h.01"></path><path d="M12 16v.01"></path><path d="M16 12h1"></path><path d="M21 12v.01"></path><path d="M12 21v-1"></path></svg>';
-  qrBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s ease;`;
+  qrBtn.style.cssText = `border:none; background:transparent; color:${c.textMuted}; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); will-change:transform,background-color; transform:translateZ(0);`;
   qrBtn.title = chrome.i18n.getMessage('qrCode') || 'QR Code';
   qrBtn.addEventListener('mouseenter', () => {
     qrBtn.style.background = c.hover;
     qrBtn.style.color = c.textSecondary;
+    qrBtn.style.transform = 'scale(1.1) translateZ(0)';
   });
   qrBtn.addEventListener('mouseleave', () => {
     qrBtn.style.background = 'transparent';
     qrBtn.style.color = c.textMuted;
+    qrBtn.style.transform = 'translateZ(0)';
   });
         qrBtn.onclick = async (e) => {
           e.stopPropagation();
@@ -895,23 +919,33 @@ function buildLinkItem(host, link, t) {
   
   const menuBtn = document.createElement('button');
   menuBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m16 10-4 4-4-4"></path></svg>';
-  menuBtn.style.cssText = 'border:none; background:transparent; color:#6b7280; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s ease;';
+  menuBtn.style.cssText = 'border:none; background:transparent; color:#6b7280; cursor:pointer; padding:4px; border-radius:4px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); will-change:transform,background-color; transform:translateZ(0);';
   menuBtn.title = chrome.i18n.getMessage('more') || 'More';
   menuBtn.addEventListener('mouseenter', () => {
     menuBtn.style.background = '#f3f4f6';
     menuBtn.style.color = '#374151';
+    menuBtn.style.transform = 'scale(1.1) translateZ(0)';
   });
   menuBtn.addEventListener('mouseleave', () => {
     menuBtn.style.background = 'transparent';
     menuBtn.style.color = '#6b7280';
+    menuBtn.style.transform = 'translateZ(0)';
   });
   
+  // Create menu that will be appended to body to avoid overflow clipping
   const menu = document.createElement('div');
-  menu.style.cssText = `position:absolute; top:100%; right:0; background:${c.cardBg}; color:${c.text}; border:1px solid ${c.border}; border-radius:6px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); z-index:10; display:none; min-width:120px;`;
+  menu.className = 'link-context-menu';
+  menu.style.cssText = `position:fixed; background:${c.cardBg}; color:${c.text}; border:1px solid ${c.border}; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; display:none; min-width:120px; overflow:hidden;`;
 
        const editBtn = document.createElement('button');
   editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></svg>${chrome.i18n.getMessage('edit') || 'Edit'}`;
-  editBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; color:${c.text}; text-align:left; cursor:pointer; font-size:12px; display:flex; align-items:center;`;
+  editBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; color:${c.text}; text-align:left; cursor:pointer; font-size:12px; display:flex; align-items:center; transition:background-color 0.15s ease;`;
+  editBtn.addEventListener('mouseenter', () => {
+    editBtn.style.background = c.hover;
+  });
+  editBtn.addEventListener('mouseleave', () => {
+    editBtn.style.background = 'transparent';
+  });
   editBtn.onclick = (e) => {
     e.stopPropagation();
     menu.style.display = 'none';
@@ -920,7 +954,13 @@ function buildLinkItem(host, link, t) {
 
        const deleteBtn = document.createElement('button');
   deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7"></path><path d="m5 11 9 9"></path></svg>${chrome.i18n.getMessage('delete') || 'Delete'}`;
-  deleteBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; text-align:left; cursor:pointer; font-size:12px; color:#dc2626; display:flex; align-items:center;`;
+  deleteBtn.style.cssText = `width:100%; padding:8px 12px; border:none; background:transparent; text-align:left; cursor:pointer; font-size:12px; color:#dc2626; display:flex; align-items:center; transition:background-color 0.15s ease;`;
+  deleteBtn.addEventListener('mouseenter', () => {
+    deleteBtn.style.background = c.hover;
+  });
+  deleteBtn.addEventListener('mouseleave', () => {
+    deleteBtn.style.background = 'transparent';
+  });
   deleteBtn.onclick = (e) => {
     e.stopPropagation();
     menu.style.display = 'none';
@@ -929,15 +969,80 @@ function buildLinkItem(host, link, t) {
   
   menu.appendChild(editBtn);
   menu.appendChild(deleteBtn);
+  document.body.appendChild(menu);
+  
+  // Close any other open menus first
+  function closeAllMenus() {
+    document.querySelectorAll('.link-context-menu').forEach(m => {
+      m.style.display = 'none';
+    });
+  }
+  
+  menuBtn.dataset.menuId = menu.dataset.menuId;
   
   menuBtn.onclick = (e) => {
     e.stopPropagation();
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    const isOpen = menu.style.display === 'block';
+    closeAllMenus();
+    
+    if (!isOpen) {
+      // Calculate menu position relative to menu button
+      const rect = menuBtn.getBoundingClientRect();
+      const popupRect = document.body.getBoundingClientRect();
+      
+      // Position menu below the button, aligned to the right
+      let top = rect.bottom + 4;
+      let left = rect.right - 120; // Align right edge
+      
+      // Temporarily show menu to get its dimensions
+      menu.style.display = 'block';
+      const menuRect = menu.getBoundingClientRect();
+      
+      // Check if menu would go off bottom of popup
+      if (top + menuRect.height > popupRect.bottom) {
+        // Show above instead
+        top = rect.top - menuRect.height - 4;
+        // Ensure it doesn't go above popup
+        if (top < popupRect.top) {
+          top = popupRect.top + 4;
+        }
+      }
+      
+      // Check if menu would go off left edge
+      if (left < popupRect.left) {
+        left = popupRect.left + 4;
+      }
+      
+      // Check if menu would go off right edge
+      if (left + menuRect.width > popupRect.right) {
+        left = popupRect.right - menuRect.width - 4;
+      }
+      
+      menu.style.top = `${top}px`;
+      menu.style.left = `${left}px`;
+    } else {
+      menu.style.display = 'none';
+    }
   };
+  
+  // Store reference to menu button for closing logic
+  menu._menuBtn = menuBtn;
+  
+  // Use a single global listener with event delegation (more efficient)
+  if (!document._menuClickHandler) {
+    document._menuClickHandler = (e) => {
+      document.querySelectorAll('.link-context-menu').forEach(m => {
+        const btn = m._menuBtn;
+        if (m.style.display === 'block' && !m.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+          m.style.display = 'none';
+        }
+      });
+    };
+    document.addEventListener('click', document._menuClickHandler, true);
+  }
   
   actionButtons.appendChild(qrBtn);
   actionButtons.appendChild(menuBtn);
-  actionButtons.appendChild(menu);
   
   topSection.appendChild(leftContent);
   topSection.appendChild(actionButtons);
@@ -984,24 +1089,29 @@ function buildLinkItem(host, link, t) {
   item.appendChild(topSection);
   item.appendChild(bottomSection);
   
-  item.addEventListener('click', () => { 
+  item.addEventListener('click', (e) => {
+    // Prevent click if clicking on action buttons or menu
+    if (e.target.closest('button') || e.target.closest('.link-context-menu')) {
+      return;
+    }
+    
+    // Immediately switch tab for instant feedback
     lastSelectedSlug = link.slug; 
     switchTab('analytics'); 
-    showAnalytics(link.slug); 
+    
+    // Load analytics asynchronously without blocking
+    showAnalytics(link.slug).catch(err => {
+      console.error('Failed to load analytics:', err);
+    });
   });
   
   return item;
 }
 
 async function showAnalytics(slug) {
-  const { host, token } = await readSettings();
-  if (!host || !host.trim()) {
-    const err = document.getElementById('analytics-error');
-    err.style.display = 'block';
-    err.textContent = 'Please configure host in Settings.';
-    return;
-  }
+  // Always show analytics panel immediately for responsiveness
   switchTab('analytics');
+  
   const err = document.getElementById('analytics-error');
   err.style.display = 'none';
   err.textContent = '';
@@ -1018,36 +1128,55 @@ async function showAnalytics(slug) {
   const ctx = document.getElementById('chart');
   drawSparkline(ctx, [], []);
 
+  // Load data asynchronously without blocking UI
+  try {
+    const { host, token } = await readSettings();
+    if (!host || !host.trim()) {
+      err.style.display = 'block';
+      err.textContent = 'Please configure host in Settings.';
+      return;
+    }
+
   const params = new URLSearchParams();
   if (slug) params.set('slug', slug);
-  try {
-    const data = await apiCall(`api/stats/counters?${params.toString()}`);
+    
+    // Load counters and views in parallel for better performance
+    const [countersData, viewsData] = await Promise.all([
+      apiCall(`api/stats/counters?${params.toString()}`).catch(e => {
+        console.error('Counters error:', e);
+        return null;
+      }),
+      apiCall(`api/stats/views?${new URLSearchParams({ unit: 'day', clientTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC', ...(slug ? { slug } : {}) }).toString()}`).catch(e => {
+        console.error('Views error:', e);
+        return null;
+      })
+    ]);
+
+    // Update counters
+    if (countersData) {
     let row = null;
-    if (Array.isArray(data)) {
-      row = data[0] || null;
-    } else if (data && Array.isArray(data.data)) {
-      row = data.data[0] || null;
-    } else if (data && typeof data === 'object') {
-      row = data;
+      if (Array.isArray(countersData)) {
+        row = countersData[0] || null;
+      } else if (countersData && Array.isArray(countersData.data)) {
+        row = countersData.data[0] || null;
+      } else if (countersData && typeof countersData === 'object') {
+        row = countersData;
     }
     document.getElementById('metric-visits').textContent = row?.visits ?? '0';
     document.getElementById('metric-visitors').textContent = row?.visitors ?? '0';
     document.getElementById('metric-referers').textContent = row?.referers ?? '0';
-  } catch (e) {
+    } else {
     err.style.display = 'block';
-    err.textContent = `Counters error: ${e?.message || e}`;
-  }
+      err.textContent = 'Failed to load counters';
+    }
 
-  // Trend sparkline (daily views for last ~14 days)
-  try {
-    const qs = new URLSearchParams({ unit: 'day', clientTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Etc/UTC' });
-    if (slug) qs.set('slug', slug);
-    const series = await apiCall(`api/stats/views?${qs.toString()}`);
+    // Update sparkline
+    if (viewsData) {
     let values = [];
-    if (Array.isArray(series)) {
-      values = series.map(p => Number(p.visits || 0));
-    } else if (series && Array.isArray(series.data)) {
-      values = series.data.map(p => Number(p.visits || 0));
+      if (Array.isArray(viewsData)) {
+        values = viewsData.map(p => Number(p.visits || 0));
+      } else if (viewsData && Array.isArray(viewsData.data)) {
+        values = viewsData.data.map(p => Number(p.visits || 0));
     }
     // Build date labels for tooltip using local date
     const labels = [];
@@ -1061,9 +1190,17 @@ async function showAnalytics(slug) {
       }
     } catch (_) {}
     drawSparkline(ctx, values, labels);
+    } else {
+      if (err.textContent) {
+        err.textContent += ' | Failed to load views';
+      } else {
+        err.style.display = 'block';
+        err.textContent = 'Failed to load views';
+      }
+    }
   } catch (e) {
     err.style.display = 'block';
-    err.textContent = `${err.textContent ? err.textContent + ' | ' : ''}Views error: ${e?.message || e}`;
+    err.textContent = `Error: ${e?.message || e}`;
   }
 }
 
@@ -1077,23 +1214,20 @@ async function editLink(link) {
    document.getElementById('input-slug').value = link.slug;
    document.getElementById('input-comment').value = link.comment || '';
   
-  // Set expiration if exists and is valid
   if (link.expiration && link.expiration > 0) {
     const expirationDate = new Date(link.expiration * 1000);
     const localDateTime = expirationDate.toISOString().slice(0, 16);
     document.getElementById('input-expiration').value = localDateTime;
   } else {
-    // Clear expiration field if no expiration is set
     document.getElementById('input-expiration').value = '';
   }
   
-  // Make slug input read-only in edit mode
   const slugInput = document.getElementById('input-slug');
   const randomBtn = document.getElementById('generate-slug');
   if (slugInput) {
     slugInput.readOnly = true;
-    slugInput.style.background = '#f9fafb';
-    slugInput.style.color = '#6b7280';
+    slugInput.style.background = isDarkMode() ? '#1A1A1A' : '#f9fafb';
+    slugInput.style.color = isDarkMode() ? '#cbd5e1' : '#6b7280';
     slugInput.title = chrome.i18n.getMessage('slugCannotChange') || 'This option cannot be changed';
   }
   if (randomBtn) {
@@ -1102,20 +1236,16 @@ async function editLink(link) {
     randomBtn.title = chrome.i18n.getMessage('randomDisabled') || 'Random generation disabled in edit mode';
   }
   
-  // Update the create button text
   const createBtn = document.getElementById('create');
   createBtn.dataset.editing = 'true';
   createBtn.dataset.originalSlug = link.slug;
   await updateButtonText();
   
-  // Show a localized message
   const result = document.getElementById('result');
   if (result) result.textContent = `${chrome.i18n.getMessage('editing') || 'Editing'}: ${link.slug}`;
 }
 
-// Delete link function
 async function deleteLink(slug) {
-  // Create a modern confirmation dialog
   const dialog = document.createElement('div');
   const c = themeColors();
   dialog.style = `position:fixed; top:0; left:0; right:0; bottom:0; background:${c.overlay}; display:flex; align-items:center; justify-content:center; z-index:1000;`;
@@ -1158,14 +1288,11 @@ async function deleteLink(slug) {
       const { host, token } = await readSettings();
       await apiCall('api/link/delete', 'POST', { slug });
       
-      // Refresh the links list
       await renderLinks();
       
-      // Show success message
       const result = document.getElementById('result');
       result.textContent = `✅ Deleted: ${slug}`;
     } catch (e) {
-      // Show error in result area instead of alert
       const result = document.getElementById('result');
       result.textContent = `Error deleting link: ${e?.message || e}`;
     }
@@ -1175,7 +1302,6 @@ async function deleteLink(slug) {
 document.getElementById('refresh')?.addEventListener('click', () => renderLinks());
 renderLinks();
 
-// Tabs handling
 const tabs = ['create', 'links', 'analytics', 'settings'];
 let lastSelectedSlug = null;
 let linksCursor = null;
@@ -1200,7 +1326,24 @@ function switchTab(name) {
     const panel = document.getElementById(`panel-${t}`);
     if (!btn || !panel) continue;
     const active = t === name;
-    panel.style.display = active ? (t === 'links' ? 'grid' : 'block') : 'none';
+    
+    if (active) {
+      panel.style.display = t === 'links' ? 'grid' : 'block';
+      requestAnimationFrame(() => {
+        panel.style.opacity = '0';
+        panel.style.transform = 'translateY(4px)';
+        requestAnimationFrame(() => {
+          panel.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+          panel.style.opacity = '1';
+          panel.style.transform = 'translateY(0)';
+        });
+      });
+    } else {
+      panel.style.display = 'none';
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+    }
+    
     const c = themeColors();
     if (active) {
       btn.classList.add('active');
@@ -1217,14 +1360,11 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
   const createBtn = document.getElementById('create');
   const isEditing = createBtn?.dataset.editing === 'true';
 
-  // When editing, do not clear or auto-fill
   if (!isEditing) {
-    // Only clear form if it's not already filled or if we're skipping autofill
     const inputUrl = document.getElementById('input-url');
     const slugInput = document.getElementById('input-slug');
     
     if (skipAutofillOnce || (!inputUrl.value.trim() && !slugInput.value.trim())) {
-    // Clear form for fresh create
     document.getElementById('input-url').value = '';
     document.getElementById('input-slug').value = '';
     document.getElementById('input-comment').value = '';
@@ -1232,7 +1372,6 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
     document.getElementById('result').textContent = '';
     }
 
-    // Ensure slug input is in normal state (not read-only)
     const randomBtn = document.getElementById('generate-slug');
     if (slugInput) {
       slugInput.readOnly = false;
@@ -1246,12 +1385,10 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
       randomBtn.title = '';
     }
 
-    // Auto-generate random slug when opening create tab (unless skipping once)
     if (!skipAutofillOnce && !slugInput.value.trim()) {
       slugInput.value = generateRandomSlug();
     }
 
-    // Auto-fill Destination URL from current active tab when entering Create tab (unless skipping once)
     try {
       if (!skipAutofillOnce && inputUrl && autoDetectUrl && !inputUrl.value.trim()) {
         const activeUrl = await getActiveTabUrl();
@@ -1265,7 +1402,6 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
 
   if (skipAutofillOnce) skipAutofillOnce = false;
 
-  // Clear analytics selection when switching away
   lastSelectedSlug = null;
   switchTab('create');
 });
@@ -1278,11 +1414,9 @@ document.getElementById('tab-links')?.addEventListener('click', async () => {
   }
 });
 document.getElementById('tab-analytics')?.addEventListener('click', () => {
-  // If no link selected yet, show global analytics
   showAnalytics(lastSelectedSlug);
 });
 document.getElementById('tab-settings')?.addEventListener('click', async () => {
-  // Clear analytics selection when switching away
   lastSelectedSlug = null;
   const { host, token, showContextMenu } = await readSettings();
   const hostEl = document.getElementById('setting-host');
@@ -1298,7 +1432,6 @@ document.getElementById('tab-settings')?.addEventListener('click', async () => {
   switchTab('settings');
 });
 
-// Add real-time URL normalization
 document.getElementById('setting-host')?.addEventListener('blur', () => {
   const input = document.getElementById('setting-host');
   const rawHost = input.value.trim();
@@ -1315,11 +1448,6 @@ document.getElementById('setting-host')?.addEventListener('blur', () => {
 });
 switchTab('create');
 
-// Removed old inline translations; Chrome i18n is used instead
-
-// Removed old language detection; Chrome i18n handles it
-
-// Update button text using chrome.i18n
 async function updateButtonText() {
   const createBtn = document.getElementById('create');
   const openBtn = document.getElementById('open');
@@ -1334,14 +1462,12 @@ async function updateButtonText() {
   }
 }
 
-// Wire up Create button click
 document.getElementById('create')?.addEventListener('click', async (e) => {
   e.preventDefault();
   e.stopPropagation();
   await createViaAPI();
 });
 
-// Removed applyTranslations; static HTML placeholders handle most labels
 
 function localizePage() {
   const getMsg = (key) => chrome.i18n.getMessage(key) || '';
@@ -1350,13 +1476,11 @@ function localizePage() {
     const m = val.match(/^__MSG_([A-Za-z0-9_\-]+)__$/);
     return m ? (getMsg(m[1]) || val) : val;
   };
-  // Replace text content when it is exactly a __MSG__ token
   document.querySelectorAll('body *').forEach((el) => {
     try {
-      // 1) Replace any text-node occurrences of __MSG_*__ (even when mixed with other nodes like <span>)
       if (el.childNodes && el.childNodes.length > 0) {
         el.childNodes.forEach((n) => {
-          if (n.nodeType === 3) { // Text node
+          if (n.nodeType === 3) {
             const original = n.nodeValue || '';
             let updated = original;
             updated = updated.replace(/__MSG_([A-Za-z0-9_\-]+)__/g, (_match, k) => getMsg(k) || _match);
@@ -1364,12 +1488,10 @@ function localizePage() {
           }
         });
       } else if (el.childNodes && el.childNodes.length === 1 && el.childNodes[0].nodeType === 3) {
-        // Fallback: exact replacement when single text node
         const text = el.textContent?.trim();
         const replaced = replaceIfMsg(text);
         if (replaced !== text && typeof replaced === 'string') el.textContent = replaced;
       }
-      // Replace common attributes
       ['placeholder','aria-label','title'].forEach((attr) => {
         if (el.hasAttribute && el.hasAttribute(attr)) {
           const v = el.getAttribute(attr);
@@ -1381,19 +1503,15 @@ function localizePage() {
   });
 }
 
-// Auto-generate random slug when popup first opens
 document.addEventListener('DOMContentLoaded', async () => {
   const slugInput = document.getElementById('input-slug');
   if (slugInput && !slugInput.value.trim()) {
     slugInput.value = generateRandomSlug();
   }
   
-  // Chrome i18n handles static labels via __MSG__; dynamic content uses getMessage()
   const { autoDetectUrl, showContextMenu } = await readSettings();
-  // Apply localization for __MSG__ placeholders in HTML
   try { localizePage(); } catch (_) {}
   
-  // Update labels with proper i18n
   try {
     const shortKeyLabel = document.getElementById('label-short-key');
     const longUrlLabel = document.getElementById('label-long-url');
@@ -1410,15 +1528,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (dashboardBtn) dashboardBtn.textContent = chrome.i18n.getMessage('dashboard') || 'Dashboard';
   } catch (_) {}
   
-  // Ensure context menu is (re)created based on settings
   try { chrome.runtime.sendMessage({ type: 'updateContextMenu' }); } catch (_) {}
-  // Ensure defaults applied for toggles in UI if unset
   const autoChk = document.getElementById('setting-auto-detect');
   const ctxChk = document.getElementById('setting-show-context');
   if (autoChk && typeof autoDetectUrl === 'undefined') autoChk.checked = true; else if (autoChk) autoChk.checked = !!autoDetectUrl;
   if (ctxChk && typeof showContextMenu === 'undefined') ctxChk.checked = true; else if (ctxChk) ctxChk.checked = !!showContextMenu;
   
-  // Auto-fill Destination URL from current active tab (toolbar detection)
   try {
     const inputUrl = document.getElementById('input-url');
     if (inputUrl && autoDetectUrl && !inputUrl.value.trim()) {
@@ -1430,10 +1545,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (_) {}
   
-  // Remove error class when user starts typing in URL field
   const urlInput = document.getElementById('input-url');
   if (urlInput) {
-    // Clear existing value on focus only when NOT editing
     urlInput.addEventListener('focus', () => {
       const createBtn = document.getElementById('create');
       const isEditing = createBtn?.dataset.editing === 'true';
@@ -1470,7 +1583,6 @@ function drawSparkline(canvas, values, labels = []) {
   const max = Math.max(...values) || 1;
   const step = w / (values.length - 1 || 1);
 
-  // base path
   ctx.strokeStyle = themeColors().chartStroke;
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -1480,7 +1592,6 @@ function drawSparkline(canvas, values, labels = []) {
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   });
   ctx.stroke();
-  // fill under
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
   gradient.addColorStop(0, themeColors().chartFillTop);
   gradient.addColorStop(1, 'rgba(17,24,39,0)');
@@ -1490,21 +1601,18 @@ function drawSparkline(canvas, values, labels = []) {
   ctx.closePath();
   ctx.fill();
 
-  // store state
   chartState.set(canvas, { values, max, step, labels });
 
-  // ensure parent can host tooltip
   if (canvas.parentElement && getComputedStyle(canvas.parentElement).position === 'static') {
     canvas.parentElement.style.position = 'relative';
   }
 
-  // attach listeners once
   if (!canvas.dataset.interactive) {
     canvas.dataset.interactive = 'true';
     const tooltip = document.createElement('div');
     tooltip.style.position = 'absolute';
     tooltip.style.pointerEvents = 'none';
-    tooltip.style.background = '#111827';
+    tooltip.style.background = '#0F0F0F';
     tooltip.style.color = '#fff';
     tooltip.style.fontSize = '11px';
     tooltip.style.padding = '4px 6px';
@@ -1517,20 +1625,16 @@ function drawSparkline(canvas, values, labels = []) {
     const redrawWithHighlight = (idx) => {
       const state = chartState.get(canvas);
       if (!state) return;
-      // redraw base
       drawSparklineBase(canvas, state.values);
-      // draw crosshair and point
       const { values, max, step } = state;
       const x = idx * step;
       const y = h - (values[idx] / max) * (h - 4) - 2;
-      // crosshair
       ctx.strokeStyle = isDarkMode() ? 'rgba(229,231,235,0.25)' : 'rgba(17,24,39,0.25)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, 0); ctx.lineTo(x, h);
       ctx.moveTo(0, y); ctx.lineTo(w, y);
       ctx.stroke();
-      // point
       ctx.fillStyle = themeColors().chartStroke;
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI*2);
@@ -1548,7 +1652,6 @@ function drawSparkline(canvas, values, labels = []) {
       idx = Math.max(0, Math.min(values.length - 1, idx));
       tooltip.style.left = `${idx * step}px`;
       tooltip.style.top = `0px`;
-      // Render date and value on separate lines
       const dateText = labels && labels[idx] ? `${labels[idx]}` : '';
       const valueText = `${values[idx]}`;
       tooltip.innerHTML = dateText ? `${dateText}<br>${valueText}` : valueText;
@@ -1557,7 +1660,6 @@ function drawSparkline(canvas, values, labels = []) {
     };
     const onLeave = () => {
       tooltip.style.display = 'none';
-      // redraw base only
       const state = chartState.get(canvas);
       if (state) drawSparklineBase(canvas, state.values);
     };
@@ -1597,7 +1699,6 @@ function drawSparklineBase(canvas, values) {
   ctx.fill();
 }
 
-// Settings handlers in popup (no new tab)
 document.getElementById('setting-save')?.addEventListener('click', async () => {
   const rawHost = document.getElementById('setting-host').value.trim();
   const token = document.getElementById('setting-token').value.trim();
@@ -1605,7 +1706,6 @@ document.getElementById('setting-save')?.addEventListener('click', async () => {
   const showContextMenu = !!document.getElementById('setting-show-context').checked;
   const s = document.getElementById('setting-status');
   
-  // Allow saving language/token/toggles even if host is blank; only validate host if provided
   let normalizedHost = '';
   if (rawHost) {
     normalizedHost = normalizeHostUrl(rawHost);
@@ -1620,7 +1720,6 @@ document.getElementById('setting-save')?.addEventListener('click', async () => {
   try { chrome.runtime.sendMessage({ type: 'updateContextMenu' }); } catch (_) {}
   const hint = document.getElementById('hint-settings');
   if (hint) hint.style.display = (token && token.length >= 8 && normalizedHost) ? 'none' : 'block';
-  // Auto-clear Saved status after a short delay
   setTimeout(() => { if (s.textContent === (chrome.i18n.getMessage('saved') || 'Saved')) s.textContent = ''; }, 1000);
 });
 
@@ -1647,10 +1746,8 @@ document.getElementById('setting-test')?.addEventListener('click', async () => {
       return;
     }
     
-    // 先保存設定，然後測試
     await writeSettings({ host: normalizedHost, token });
     
-    // 測試 API 連接 - 使用 /api/link/list 而不是 /api/verify
     const response = await fetch(`${normalizedHost}api/link/list?limit=1`, {
       method: 'GET',
       headers: {
@@ -1660,7 +1757,6 @@ document.getElementById('setting-test')?.addEventListener('click', async () => {
     
     if (response.ok) {
       s.textContent = `OK: ${normalizedHost}`;
-      // Auto-clear OK status after a short delay
       setTimeout(() => { if (s.textContent && s.textContent.startsWith('OK:')) s.textContent = ''; }, 2000);
     } else {
       const errorText = await response.text();

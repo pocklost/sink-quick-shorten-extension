@@ -38,6 +38,9 @@
    "copied": {
       "message": "Kopiert"
    },
+  "copy": {
+    "message": "Kopieren"
+  },
    "createCopy": {
       "message": "Erstellen & Kopieren"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "Laden fehlgeschlagen"
+   },
+   "goToSettings": {
+      "message": "Zu Einstellungen gehen"
    },
    "host": {
       "message": "Host"

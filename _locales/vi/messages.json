@@ -38,6 +38,9 @@
    "copied": {
       "message": "Đã sao chép"
    },
+  "copy": {
+    "message": "Sao chép"
+  },
    "createCopy": {
       "message": "Tạo & Sao chép"
    },
@@ -91,6 +94,9 @@
    },
    "failedToLoad": {
       "message": "Tải thất bại"
+   },
+   "goToSettings": {
+      "message": "Đi đến Cài đặt"
    },
    "host": {
       "message": "Máy chủ"
