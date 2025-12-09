@@ -754,7 +754,7 @@ function buildLinkItem(host, link, t) {
   faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${isDarkMode() ? '#2A2A2A' : '#f3f4f6'};`;
 
        const favicon = document.createElement('img');
-  favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}`;
+  favicon.src = `https://unavatar.io/${new URL(link.url).hostname}`;
   favicon.style.cssText = 'height:100%; width:100%; object-fit:cover;';
   favicon.onerror = () => { 
     faviconContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
