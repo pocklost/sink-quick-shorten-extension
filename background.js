@@ -188,7 +188,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         copy: chrome.i18n.getMessage('copy') || 'Copy',
         close: chrome.i18n.getMessage('close') || 'Close',
         copied: chrome.i18n.getMessage('copied') || 'Copied',
-        copyFailed: chrome.i18n.getMessage('failed') || 'Failed'
+        copyFailed: chrome.i18n.getMessage('failed') || 'Failed',
+        supportHint: chrome.i18n.getMessage('supportHint') || 'If this tool helps you, consider supporting the developer!',
+        supportDevAction: chrome.i18n.getMessage('supportDevAction') || 'Donate'
       };
       try {
         await chrome.scripting.executeScript({
@@ -206,7 +208,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
                 position:fixed; right:16px; bottom:16px; z-index:2147483647;
                 background:#1A1A1A; color:#f1f1f1; border:1px solid #333;
                 border-radius:12px; padding:12px 14px; min-width:220px;
-                box-shadow:0 10px 25px rgba(0,0,0,0.35); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+                font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
                 display:flex; flex-direction:column; gap:8px; animation:fadeInToast 150ms ease;
               `;
 
@@ -247,7 +249,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
                 background:#1f1f1f; color:#e5e7eb; cursor:pointer; font-size:13px;
                 transition:all .15s ease;
               `;
-              closeBtn.onclick = () => toast.remove();
+              closeBtn.onclick = () => {
+                const support = document.getElementById('sink-support-toast');
+                if (support) support.remove();
+                toast.remove();
+              };
 
               btnRow.appendChild(closeBtn);
               btnRow.appendChild(copyBtn);
@@ -263,6 +269,79 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
               toast.appendChild(style);
 
               document.body.appendChild(toast);
+
+              const hasShownSupport = localStorage.getItem('support-hint-shown');
+              const createCount = parseInt(localStorage.getItem('create-count') || '0') + 1;
+              localStorage.setItem('create-count', createCount.toString());
+              
+              if (!hasShownSupport || createCount % 3 === 0) {
+                setTimeout(() => {
+                  const toastWidth = toast.offsetWidth || 220;
+                  const toastHeight = toast.offsetHeight || 0;
+                  
+                  const supportToast = document.createElement('div');
+                  supportToast.id = 'sink-support-toast';
+                  supportToast.style.cssText = `
+                    position:fixed; right:16px; bottom:${16 + toastHeight + 8}px; z-index:2147483647;
+                    background:#1A1A1A; color:#f1f1f1; border:1px solid #333;
+                    border-radius:12px; padding:12px 14px; width:${toastWidth}px; box-sizing:border-box;
+                    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+                    display:flex; flex-direction:column; gap:10px; animation:fadeInToast 150ms ease;
+                  `;
+                  
+                  const supportTextRow = document.createElement('div');
+                  supportTextRow.style.cssText = 'display:flex; align-items:flex-start; gap:8px; line-height:1.5;';
+                  
+                  const heartIcon = document.createElement('span');
+                  heartIcon.textContent = '❤️';
+                  heartIcon.style.cssText = 'font-size:16px; flex-shrink:0; margin-top:1px; line-height:1;';
+                  
+                  const supportMessage = document.createElement('div');
+                  supportMessage.textContent = i18nText?.supportHint || 'If this tool helps you, consider supporting the developer!';
+                  supportMessage.style.cssText = `
+                    font-size:12px; color:#e4e4e7; line-height:1.5; font-weight:600;
+                    flex:1; min-width:0; word-break:break-word; overflow-wrap:break-word;
+                    hyphens:auto; text-align:left;
+                  `;
+                  
+                  supportTextRow.appendChild(heartIcon);
+                  supportTextRow.appendChild(supportMessage);
+                  
+                  const divider = document.createElement('div');
+                  divider.style.cssText = 'height:1px; background:#333; margin:2px 0;';
+                  
+                  const supportBtn = document.createElement('a');
+                  supportBtn.href = 'https://ko-fi.com/pocket377';
+                  supportBtn.target = '_blank';
+                  supportBtn.rel = 'noopener';
+                  supportBtn.textContent = i18nText?.supportDevAction || 'Donate';
+                  supportBtn.style.cssText = `
+                    padding:8px 12px; border-radius:10px; border:1px solid #333;
+                    background:#2A2A2A; color:#fff; cursor:pointer; font-size:12px;
+                    text-decoration:none; text-align:center; display:block; width:100%;
+                    box-sizing:border-box; transition:all .15s ease; font-weight:600;
+                  `;
+                  supportBtn.onmouseenter = () => { supportBtn.style.filter = 'brightness(1.1)'; };
+                  supportBtn.onmouseleave = () => { supportBtn.style.filter = 'brightness(1)'; };
+                  
+                  supportToast.appendChild(supportTextRow);
+                  supportToast.appendChild(divider);
+                  supportToast.appendChild(supportBtn);
+                  
+                  document.body.appendChild(supportToast);
+                  
+                  const originalRemove = toast.remove.bind(toast);
+                  toast.remove = function() {
+                    const support = document.getElementById('sink-support-toast');
+                    if (support) support.remove();
+                    originalRemove();
+                  };
+                }, 10);
+                
+                if (!hasShownSupport) {
+                  localStorage.setItem('support-hint-shown', 'true');
+                }
+              }
 
               setTimeout(() => { toast.remove(); }, 12000);
             } catch (e) {

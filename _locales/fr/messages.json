@@ -39,10 +39,13 @@
     "message": "Soutenir le développeur"
   },
   "supportDevDesc": {
-    "message": "Offrez-moi un café ☕"
+    "message": "Vous aimez cet outil ? Offrez-moi un café pour soutenir le développement continu ☕"
   },
   "supportDevAction": {
-    "message": "Ouvrir"
+    "message": "Faire un don"
+  },
+  "supportHint": {
+    "message": "Si cet outil vous aide, envisagez de soutenir le développeur !"
   },
    "copied": {
       "message": "Copié"

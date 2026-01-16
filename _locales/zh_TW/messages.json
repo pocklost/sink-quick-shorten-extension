@@ -39,10 +39,13 @@
     "message": "支持開發者"
   },
   "supportDevDesc": {
-    "message": "點我請杯咖啡 ☕"
+    "message": "喜歡這個工具？請杯咖啡支持持續開發 ☕"
   },
   "supportDevAction": {
-    "message": "前往"
+    "message": "贊助"
+  },
+  "supportHint": {
+    "message": "如果這個工具對你有幫助，考慮支持一下開發者吧！"
   },
    "copied": {
       "message": "已複製"

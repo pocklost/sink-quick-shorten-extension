@@ -39,10 +39,13 @@
     "message": "Ủng hộ nhà phát triển"
   },
   "supportDevDesc": {
-    "message": "Mời tôi một ly cà phê ☕"
+    "message": "Bạn thích công cụ này? Mời tôi một ly cà phê để hỗ trợ phát triển tiếp tục ☕"
   },
   "supportDevAction": {
-    "message": "Mở"
+    "message": "Quyên góp"
+  },
+  "supportHint": {
+    "message": "Nếu công cụ này giúp ích cho bạn, hãy cân nhắc hỗ trợ nhà phát triển!"
   },
    "copied": {
       "message": "Đã sao chép"

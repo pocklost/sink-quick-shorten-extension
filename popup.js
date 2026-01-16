@@ -433,6 +433,44 @@ async function createViaAPI() {
           successFeedback.style.transform = 'translateY(-10px)';
           setTimeout(() => {
             successFeedback.style.display = 'none';
+            if (!isEditing) {
+              const supportHint = document.getElementById('support-hint');
+              if (supportHint) {
+                const hasShownSupport = localStorage.getItem('support-hint-shown');
+                const createCount = parseInt(localStorage.getItem('create-count') || '0') + 1;
+                localStorage.setItem('create-count', createCount.toString());
+                
+                const wasVisible = supportHint.style.display === 'block';
+                if (wasVisible) {
+                  supportHint.style.opacity = '0';
+                  supportHint.style.transform = 'translateY(-5px)';
+                  setTimeout(() => {
+                    supportHint.style.display = 'none';
+                  }, 300);
+                }
+                
+                if (!hasShownSupport || createCount % 3 === 0) {
+
+                  const delay = wasVisible ? 300 : 0;
+                  setTimeout(() => {
+                    supportHint.style.display = 'block';
+                    supportHint.style.opacity = '0';
+                    supportHint.style.transform = 'translateY(-5px)';
+                    requestAnimationFrame(() => {
+                      supportHint.style.transition = 'all 0.3s ease';
+                      supportHint.style.opacity = '1';
+                      supportHint.style.transform = 'translateY(0)';
+                    });
+                  }, delay);
+                  
+                  if (!hasShownSupport) {
+                    localStorage.setItem('support-hint-shown', 'true');
+                  }
+                } else if (!wasVisible) {
+                  supportHint.style.display = 'none';
+                }
+              }
+            }
           }, 300);
         }, 3000);
       }
@@ -1354,6 +1392,27 @@ function switchTab(name) {
     btn.style.color = active ? '#fff' : c.textMuted;
   }
   applyThemeToStaticElements();
+  
+  if (name === 'create') {
+    const supportHint = document.getElementById('support-hint');
+    if (supportHint) {
+      const hasShownSupport = localStorage.getItem('support-hint-shown');
+      const createCount = parseInt(localStorage.getItem('create-count') || '0');
+      
+      if (!hasShownSupport || (createCount > 0 && createCount % 3 === 0)) {
+        supportHint.style.display = 'block';
+        supportHint.style.opacity = '1';
+        supportHint.style.transform = 'translateY(0)';
+      } else {
+        supportHint.style.display = 'none';
+      }
+    }
+  } else {
+    const supportHint = document.getElementById('support-hint');
+    if (supportHint) {
+      supportHint.style.display = 'none';
+    }
+  }
 }
 
 document.getElementById('tab-create')?.addEventListener('click', async () => {
@@ -1565,6 +1624,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof showAdvanced !== 'undefined') {
     advanced.style.display = showAdvanced ? 'grid' : 'none';
     toggle.textContent = showAdvanced ? (chrome.i18n.getMessage('simple') || 'Simple') : (chrome.i18n.getMessage('advanced') || 'Advanced');
+  }
+  
+  const supportHint = document.getElementById('support-hint');
+  if (supportHint) {
+    const hasShownSupport = localStorage.getItem('support-hint-shown');
+    const createCount = parseInt(localStorage.getItem('create-count') || '0');
+    
+    const createTab = document.getElementById('tab-create');
+    const isCreateTabActive = createTab && createTab.classList.contains('active');
+    
+    if (isCreateTabActive && (!hasShownSupport || (createCount > 0 && createCount % 3 === 0))) {
+      supportHint.style.display = 'block';
+      supportHint.style.opacity = '1';
+      supportHint.style.transform = 'translateY(0)';
+    }
   }
 });
 

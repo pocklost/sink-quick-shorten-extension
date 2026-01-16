@@ -55,6 +55,8 @@
         .support-card{background:#252525;border:1px solid #333333;color:#f1f1f1}
         .support-card .badge{background:#333;color:#ef4444;box-shadow:none}
         .support-card .support-link{color:#f1f1f1;text-decoration:none}
+        #support-hint{background:#1A1A1A;border-color:#333333}
+        #support-hint .muted{color:#e4e4e7;font-weight:600}
         
       }
     </style>
@@ -92,6 +94,15 @@
           <button id="create" class="btn" style="width:100%">Create & Copy</button>
           <div id="success-feedback" style="display:none;padding:12px;border:1px solid #bbf7d0;border-radius:12px;background:#f0fdf4;color:#166534;text-align:center;font-size:14px;font-weight:500">
               <span id="success-text">Short link created and copied!</span>
+          </div>
+          <div id="support-hint" style="display:none;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                <span style="font-size:16px;">❤️</span>
+                <span class="muted" style="font-size:12px;line-height:1.4;color:#374151;">__MSG_supportHint__</span>
+              </div>
+              <a href="https://ko-fi.com/pocket377" target="_blank" rel="noopener" class="btn secondary" style="padding:6px 10px;font-size:11px;white-space:nowrap;text-decoration:none;">__MSG_supportDevAction__</a>
+            </div>
           </div>
           <div id="result-area" style="display:none" class="stack">
             <div id="result" class="muted" style="word-break:break-all"></div>
