@@ -90,10 +90,17 @@ async function save() {
   document.getElementById('host').value = normalizedHost;
   
   await chrome.storage.local.set({ host: normalizedHost, token, autoDetectUrl, showContextMenu });
+  try { chrome.runtime.sendMessage({ type: 'updateContextMenu' }); } catch (_) {}
   const saved = document.getElementById('saved');
   saved.textContent = `Saved: ${normalizedHost}`;
   saved.style.display = 'block';
   setTimeout(() => { saved.style.display = 'none'; }, 3000);
+}
+
+function joinApiUrl(host, endpoint) {
+  const base = host.endsWith('/') ? host : `${host}/`;
+  const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  return `${base}${path}`;
 }
 
 document.getElementById('save')?.addEventListener('click', save);
@@ -114,7 +121,7 @@ document.getElementById('test')?.addEventListener('click', async () => {
       if (status) status.textContent = 'Invalid host format';
       return;
     }
-    const resp = await fetch(`${normalizedHost}api/verify`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const resp = await fetch(joinApiUrl(normalizedHost, 'api/verify'), { headers: { 'Authorization': `Bearer ${token}` } });
     if (!resp.ok) throw new Error(await resp.text());
     if (status) status.textContent = `OK: ${normalizedHost}`;
     setTimeout(() => { if (status && status.textContent && status.textContent.startsWith('OK:')) status.textContent = ''; }, 2000);

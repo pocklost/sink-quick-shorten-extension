@@ -6,7 +6,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       return;
     }
     const currentUrl = encodeURIComponent(tab?.url || "");
-    const target = `${host}/dashboard/links?open=create&url=${currentUrl}`;
+    const target = `${joinApiUrl(host, 'dashboard/links')}?open=create&url=${currentUrl}`;
     await chrome.tabs.create({ url: target });
   } catch (e) {
     console.error("Sink Quick Shorten failed:", e);
@@ -14,6 +14,25 @@ chrome.action.onClicked.addListener(async (tab) => {
 });
 
 const MENU_ID = 'sink_quick_shorten_menu';
+const SLUG_CHARS = '23456789abcdefghjkmnpqrstuvwxyz';
+
+function generateRandomSlug(length = 6) {
+  let slug = '';
+  for (let i = 0; i < length; i++) {
+    slug += SLUG_CHARS.charAt(Math.floor(Math.random() * SLUG_CHARS.length));
+  }
+  return slug;
+}
+
+function joinApiUrl(host, endpoint) {
+  const base = host.endsWith('/') ? host : `${host}/`;
+  const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  return `${base}${path}`;
+}
+
+function isConfigured(host, token) {
+  return !!(host && host.trim() && token && token.length >= 8);
+}
 
 async function readSettings() {
   const { host, token, autoDetectUrl, showContextMenu } = await chrome.storage.local.get({ host: '', token: '', autoDetectUrl: true, showContextMenu: true });
@@ -21,13 +40,18 @@ async function readSettings() {
 }
 
 function ensureContextMenuCreated() {
-  chrome.contextMenus.removeAll(() => {
-    readSettings().then(({ showContextMenu }) => {
-      if (!showContextMenu) return;
-      const title = chrome.i18n.getMessage('contextMenuTitle') || 'Quick Shorten with Sink';
-      chrome.contextMenus.create({ id: MENU_ID, title, contexts: ['page', 'selection', 'link'] });
-    }).catch(() => {});
-  });
+  readSettings().then(({ showContextMenu }) => {
+    if (!showContextMenu) {
+      chrome.contextMenus.remove(MENU_ID, () => {});
+      return;
+    }
+    const title = chrome.i18n.getMessage('contextMenuTitle') || 'Quick Shorten with Sink';
+    chrome.contextMenus.update(MENU_ID, { title }, () => {
+      if (chrome.runtime.lastError) {
+        chrome.contextMenus.create({ id: MENU_ID, title, contexts: ['page', 'selection', 'link'] });
+      }
+    });
+  }).catch(() => {});
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -101,7 +125,7 @@ async function handleApiRequest(msg, sendResponse) {
       return;
     }
 
-    const url = customHost ? `${customHost}${endpoint}` : `${host}${endpoint}`;
+    const url = customHost ? joinApiUrl(customHost, endpoint) : joinApiUrl(host, endpoint);
     
     const options = {
       method,
@@ -115,7 +139,6 @@ async function handleApiRequest(msg, sendResponse) {
       options.body = JSON.stringify(body);
     }
     
-    console.log('Making API request via background script to:', url);
     const response = await fetch(url, options);
     const responseData = await response.text();
     
@@ -154,22 +177,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== MENU_ID) return;
   try {
     const { host, token } = await readSettings();
-    if (!host || !host.trim() || !token || token.length < 8) {
+    if (!isConfigured(host, token)) {
       try { chrome.action.openPopup(); } catch (_) {}
       return;
     }
     const pageUrl = info.linkUrl || info.pageUrl || (tab && tab.url) || '';
     if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return;
 
-    const slug = (() => {
-      const chars = '23456789abcdefghjkmnpqrstuvwxyz';
-      let s = '';
-      for (let i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
-      return s;
-    })();
-
+    const slug = generateRandomSlug();
     const body = { url: pageUrl, slug };
-    const resp = await fetch(`${host}api/link/create`, {
+    const resp = await fetch(joinApiUrl(host, 'api/link/create'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(body),

@@ -1,3 +1,7 @@
+const SLUG_CHARS = '23456789abcdefghjkmnpqrstuvwxyz';
+let settingsCache = null;
+let themeCache = null;
+
 function isDarkMode() {
   try {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -7,27 +11,26 @@ function isDarkMode() {
 }
 
 function themeColors() {
-  if (isDarkMode()) {
-    return {
-      bg: '#0F0F0F',
-      cardBg: '#1A1A1A',
-      overlay: 'rgba(0,0,0,0.5)',
-      border: '#252525',
-      borderSoft: '#333333',
-      text: '#f1f1f1',
-      textMuted: '#a1a1aa',
-      textSecondary: '#c1c1c1',
-      primary: '#333333',
-      secondary: '#2A2A2A',
-      hover: '#252525',
-      listItem: '#252525',
-      listItemHover: '#1A1A1A',
-      separator: '#2F2F2F',
-      chartStroke: '#e5e7eb',
-      chartFillTop: 'rgba(229,231,235,0.2)'
-    };
-  }
-  return {
+  const dark = isDarkMode();
+  if (themeCache && themeCache.dark === dark) return themeCache.colors;
+  const colors = dark ? {
+    bg: '#0F0F0F',
+    cardBg: '#1A1A1A',
+    overlay: 'rgba(0,0,0,0.5)',
+    border: '#252525',
+    borderSoft: '#333333',
+    text: '#f1f1f1',
+    textMuted: '#a1a1aa',
+    textSecondary: '#c1c1c1',
+    primary: '#333333',
+    secondary: '#2A2A2A',
+    hover: '#252525',
+    listItem: '#252525',
+    listItemHover: '#1A1A1A',
+    separator: '#2F2F2F',
+    chartStroke: '#e5e7eb',
+    chartFillTop: 'rgba(229,231,235,0.2)'
+  } : {
     bg: '#ffffff',
     cardBg: '#fff',
     overlay: 'rgba(0,0,0,0.5)',
@@ -45,9 +48,18 @@ function themeColors() {
     chartStroke: '#111827',
     chartFillTop: 'rgba(17,24,39,0.15)'
   };
+  themeCache = { dark, colors };
+  return colors;
+}
+
+function joinApiUrl(host, endpoint) {
+  const base = host.endsWith('/') ? host : `${host}/`;
+  const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  return `${base}${path}`;
 }
 
 function applyThemeToStaticElements() {
+  const dark = isDarkMode();
   const c = themeColors();
   const prefix = document.getElementById('host-prefix');
   const slugInput = document.getElementById('input-slug');
@@ -58,7 +70,7 @@ function applyThemeToStaticElements() {
     wrap.style.padding = '10px 12px';
     wrap.style.border = `1px solid ${c.border}`;
     wrap.style.borderRadius = '12px';
-    wrap.style.background = isDarkMode() ? '#1A1A1A' : '#f9fafb';
+    wrap.style.background = dark ? '#1A1A1A' : '#f9fafb';
     wrap.style.minWidth = '0';
   }
   if (prefix) {
@@ -76,9 +88,8 @@ function applyThemeToStaticElements() {
   }
   const tabsEl = document.querySelector('.tabs');
   if (tabsEl) {
-    const cWrap = themeColors();
-    tabsEl.style.background = isDarkMode() ? '#1A1A1A' : '#f3f4f6';
-    tabsEl.style.border = `1px solid ${cWrap.border}`;
+    tabsEl.style.background = dark ? '#1A1A1A' : '#f3f4f6';
+    tabsEl.style.border = `1px solid ${c.border}`;
     tabsEl.style.borderRadius = '12px';
     tabsEl.style.padding = '4px';
     const btns = tabsEl.querySelectorAll('button[data-tab]');
@@ -94,9 +105,9 @@ function applyThemeToStaticElements() {
   style.id = 'dynamic-scrollbar-style';
   style.textContent = `
     #links::-webkit-scrollbar{width:10px;height:10px}
-    #links::-webkit-scrollbar-track{background:${isDarkMode() ? '#1A1A1A' : '#f1f5f9'};border-radius:8px}
-    #links::-webkit-scrollbar-thumb{background:${isDarkMode() ? '#2A2A2A' : '#cbd5e1'};border-radius:8px;border:2px solid ${isDarkMode() ? '#1A1A1A' : '#f1f5f9'}}
-    #links::-webkit-scrollbar-thumb:hover{background:${isDarkMode() ? '#3A3A3A' : '#94a3b8'}}
+    #links::-webkit-scrollbar-track{background:${dark ? '#1A1A1A' : '#f1f5f9'};border-radius:8px}
+    #links::-webkit-scrollbar-thumb{background:${dark ? '#2A2A2A' : '#cbd5e1'};border-radius:8px;border:2px solid ${dark ? '#1A1A1A' : '#f1f5f9'}}
+    #links::-webkit-scrollbar-thumb:hover{background:${dark ? '#3A3A3A' : '#94a3b8'}}
   `;
   document.head.appendChild(style);
 }
@@ -109,9 +120,7 @@ async function jumpToSink() {
     ]);
     return;
   }
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const currentUrl = encodeURIComponent(tab?.url || '');
-  const target = `${host}dashboard/links`;
+  const target = joinApiUrl(host, 'dashboard/links');
   await chrome.tabs.create({ url: target });
 }
 async function showInfoDialog(title, message, actions = [{ id: 'ok', label: 'OK', primary: true }]) {
@@ -227,10 +236,18 @@ function validateHostUrl(url) {
   }
 }
 
-async function readSettings() {
+async function readSettings(force = false) {
+  if (!force && settingsCache) return { ...settingsCache };
   const { host, token, autoDetectUrl, showContextMenu } = await chrome.storage.local.get({ host: '', token: '', autoDetectUrl: true, showContextMenu: true });
-  return { host, token, autoDetectUrl, showContextMenu };
+  settingsCache = { host, token, autoDetectUrl, showContextMenu };
+  return { ...settingsCache };
 }
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && (changes.host || changes.token || changes.autoDetectUrl || changes.showContextMenu)) {
+    settingsCache = null;
+  }
+});
 
 async function apiCall(endpoint, method = 'GET', body = null, customHost = null) {
   const { host, token } = await readSettings();
@@ -243,7 +260,7 @@ async function apiCall(endpoint, method = 'GET', body = null, customHost = null)
     throw new Error('Token not configured');
   }
 
-  const url = customHost ? `${customHost}${endpoint}` : `${host}${endpoint}`;
+  const url = customHost ? joinApiUrl(customHost, endpoint) : joinApiUrl(host, endpoint);
   
   try {
     const options = {
@@ -260,7 +277,6 @@ async function apiCall(endpoint, method = 'GET', body = null, customHost = null)
       options.body = JSON.stringify(body);
     }
     
-    console.log('Making direct API request to:', url);
     const response = await fetch(url, options);
     
     if (!response.ok) {
@@ -277,7 +293,6 @@ async function apiCall(endpoint, method = 'GET', body = null, customHost = null)
     }
   } catch (error) {
     if (error.message.includes('CORS') || error.message.includes('blocked') || error.message.includes('Access-Control-Allow-Origin')) {
-      console.log('CORS error detected, trying background script fallback...');
       return await apiCallViaBackground(endpoint, method, body, customHost);
     }
     throw error;
@@ -321,6 +336,7 @@ async function apiCallViaBackground(endpoint, method = 'GET', body = null, custo
 async function writeSettings(next) {
   const current = await readSettings();
   const updated = { ...current, ...next };
+  settingsCache = updated;
   await chrome.storage.local.set(updated);
   return updated;
 }
@@ -332,7 +348,7 @@ async function validateLogin() {
       return false;
     }
     
-    const response = await fetch(`${host}api/link/list?limit=1`, {
+    const response = await fetch(joinApiUrl(host, 'api/link/list?limit=1'), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -522,7 +538,6 @@ async function createViaAPI() {
   }
 }
 
-document.getElementById('create')?.addEventListener('click', createViaAPI);
 document.getElementById('open-options')?.addEventListener('click', async (e) => {
   e.preventDefault();
   if (chrome.runtime.openOptionsPage) {
@@ -531,10 +546,9 @@ document.getElementById('open-options')?.addEventListener('click', async (e) => 
 });
 
 function generateRandomSlug() {
-  const chars = '23456789abcdefghjkmnpqrstuvwxyz';
   let randomSlug = '';
   for (let i = 0; i < 6; i++) {
-    randomSlug += chars.charAt(Math.floor(Math.random() * chars.length));
+    randomSlug += SLUG_CHARS.charAt(Math.floor(Math.random() * SLUG_CHARS.length));
   }
   return randomSlug;
 }
@@ -564,9 +578,9 @@ try {
   if (window.matchMedia) {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     if (mq && mq.addEventListener) {
-      mq.addEventListener('change', () => applyThemeToStaticElements());
+      mq.addEventListener('change', () => { themeCache = null; applyThemeToStaticElements(); });
     } else if (mq && mq.addListener) {
-      mq.addListener(() => applyThemeToStaticElements());
+      mq.addListener(() => { themeCache = null; applyThemeToStaticElements(); });
     }
   }
 } catch (_) {}
@@ -628,7 +642,63 @@ document.getElementById('btn-qr-result')?.addEventListener('click', () => {
   document.body.appendChild(dialog);
 });
 
+function linkSortTime(link) {
+  for (const field of ['createdAt', 'updatedAt']) {
+    const ts = link?.[field];
+    if (ts == null || ts === '') continue;
+    let ms = Number(ts);
+    if (!Number.isNaN(ms) && ms > 0) {
+      if (ms < 1e12) ms *= 1000;
+      return ms;
+    }
+    const parsed = Date.parse(String(ts));
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  return 0;
+}
+
+function sortLinksNewestFirst(links) {
+  return [...links].sort((a, b) => {
+    const diff = linkSortTime(b) - linkSortTime(a);
+    if (diff !== 0) return diff;
+    return String(b.id || b.slug || '').localeCompare(String(a.id || a.slug || ''));
+  });
+}
+
+async function fetchAllLinksSorted() {
+  const bySlug = new Map();
+  let cursor = null;
+  let pages = 0;
+  const MAX_PAGES = 30;
+  const PAGE_SIZE = 50;
+  do {
+    const query = cursor
+      ? `api/link/list?limit=${PAGE_SIZE}&cursor=${encodeURIComponent(cursor)}`
+      : `api/link/list?limit=${PAGE_SIZE}`;
+    const data = await apiCall(query);
+    for (const link of (data?.links || []).filter(Boolean)) {
+      if (link.slug) bySlug.set(link.slug, link);
+    }
+    cursor = data?.cursor || null;
+    pages++;
+  } while (cursor && pages < MAX_PAGES);
+  return { links: sortLinksNewestFirst([...bySlug.values()]), cursor: pages >= MAX_PAGES ? cursor : null };
+}
+
+function paintLinksList(listEl, host, links) {
+  const fragment = document.createDocumentFragment();
+  renderedSlugs.clear();
+  for (const link of links) {
+    if (!link?.slug || renderedSlugs.has(link.slug)) continue;
+    renderedSlugs.add(link.slug);
+    fragment.appendChild(buildLinkItem(host, link));
+  }
+  listEl.innerHTML = '';
+  listEl.appendChild(fragment);
+}
+
 let renderLinksSeq = 0;
+let loadedLinks = [];
 async function renderLinks() {
   const mySeq = ++renderLinksSeq;
   const listEl = document.getElementById('links');
@@ -677,28 +747,18 @@ async function renderLinks() {
     }
     linksCursor = null;
     isLoadingMore = false;
-    renderedSlugs.clear();
+    loadedLinks = [];
 
-    const data = await apiCall('api/link/list?limit=20');
-     const links = (data?.links || []).filter(Boolean);
-     linksCursor = data?.cursor || null;
-     if (mySeq !== renderLinksSeq) return;
-     if (!links.length) {
-       listEl.innerHTML = `<span style="font-size:12px; color:#6b7280;">${chrome.i18n.getMessage('noLinks') || 'No links.'}</span>`;
-       return;
-     }
-     
-     links.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-     
-     const fragment = document.createDocumentFragment();
-     for (const link of links) {
-      if (renderedSlugs.has(link.slug)) continue;
-      renderedSlugs.add(link.slug);
-       const item = buildLinkItem(host, link);
-       fragment.appendChild(item);
-     }
-     listEl.innerHTML = '';
-     listEl.appendChild(fragment);
+    const { links, cursor } = await fetchAllLinksSorted();
+    loadedLinks = links;
+    linksCursor = cursor;
+    if (mySeq !== renderLinksSeq) return;
+    if (!links.length) {
+      listEl.innerHTML = `<span style="font-size:12px; color:#6b7280;">${chrome.i18n.getMessage('noLinks') || 'No links.'}</span>`;
+      return;
+    }
+
+    paintLinksList(listEl, host, links);
     attachInfiniteScroll(listEl);
   } catch (e) {
     if (mySeq !== renderLinksSeq) return;
@@ -733,20 +793,21 @@ function attachInfiniteScroll(listEl) {
     loader.textContent = chrome.i18n.getMessage('loading') || 'Loading...';
     listEl.appendChild(loader);
     try {
-      const { host, token } = await readSettings();
-      const data = await apiCall(`api/link/list?limit=20&cursor=${encodeURIComponent(linksCursor)}`);
+      const { host } = await readSettings();
+      const data = await apiCall(`api/link/list?limit=50&cursor=${encodeURIComponent(linksCursor)}`);
       const next = (data?.links || []).filter(Boolean);
       linksCursor = data?.cursor || null;
-      next.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      const fragment = document.createDocumentFragment();
+      let added = false;
       for (const link of next) {
-        if (renderedSlugs.has(link.slug)) continue;
-        renderedSlugs.add(link.slug);
-        const { host } = await readSettings();
-        const item = buildLinkItem(host, link);
-        fragment.appendChild(item);
+        if (!link?.slug || renderedSlugs.has(link.slug)) continue;
+        loadedLinks.push(link);
+        added = true;
       }
-      listEl.appendChild(fragment);
+      if (!added) return;
+      loadedLinks = sortLinksNewestFirst(loadedLinks);
+      const scrollTop = listEl.scrollTop;
+      paintLinksList(listEl, host, loadedLinks);
+      listEl.scrollTop = scrollTop;
     } catch (e) {
       const err = document.createElement('div');
       err.className = 'muted';
@@ -762,9 +823,10 @@ function attachInfiniteScroll(listEl) {
   listEl.addEventListener('scroll', handleScroll, { passive: true });
 }
 
-function buildLinkItem(host, link, t) {
+function buildLinkItem(host, link) {
   const item = document.createElement('div');
   item.className = 'card';
+  const dark = isDarkMode();
   const c = themeColors();
   item.style.cssText = `display:flex; flex-direction:column; padding:12px; gap:8px; cursor:pointer; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); max-width:100%; background:${c.cardBg}; border:1px solid ${c.border}; color:${c.text}; will-change:transform,background-color,border-color; transform:translateZ(0);`;
   item.addEventListener('mouseenter', () => { 
@@ -789,10 +851,12 @@ function buildLinkItem(host, link, t) {
   
   // Favicon
   const faviconContainer = document.createElement('div');
-  faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${isDarkMode() ? '#2A2A2A' : '#f3f4f6'};`;
+  faviconContainer.style.cssText = `display:inline-flex; align-items:center; justify-content:center; font-normal; text-foreground; select-none; shrink-0; overflow:hidden; height:32px; width:32px; text-xs; border-radius:50%; background:${dark ? '#2A2A2A' : '#f3f4f6'};`;
 
        const favicon = document.createElement('img');
-  favicon.src = `https://unavatar.io/${new URL(link.url).hostname}`;
+  try {
+    favicon.src = `https://unavatar.io/${new URL(link.url).hostname}`;
+  } catch (_) {}
   favicon.style.cssText = 'height:100%; width:100%; object-fit:cover;';
   favicon.onerror = () => { 
     faviconContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
@@ -1323,7 +1387,6 @@ async function deleteLink(slug) {
     if (!confirmed) return;
   
     try {
-      const { host, token } = await readSettings();
       await apiCall('api/link/delete', 'POST', { slug });
       
       await renderLinks();
@@ -1338,7 +1401,6 @@ async function deleteLink(slug) {
 }
 
 document.getElementById('refresh')?.addEventListener('click', () => renderLinks());
-renderLinks();
 
 const tabs = ['create', 'links', 'analytics', 'settings'];
 let lastSelectedSlug = null;
@@ -1449,6 +1511,7 @@ document.getElementById('tab-create')?.addEventListener('click', async () => {
     }
 
     try {
+      const { autoDetectUrl } = await readSettings();
       if (!skipAutofillOnce && inputUrl && autoDetectUrl && !inputUrl.value.trim()) {
         const activeUrl = await getActiveTabUrl();
         if (activeUrl && /^https?:\/\//i.test(activeUrl)) {
@@ -1477,12 +1540,11 @@ document.getElementById('tab-analytics')?.addEventListener('click', () => {
 });
 document.getElementById('tab-settings')?.addEventListener('click', async () => {
   lastSelectedSlug = null;
-  const { host, token, showContextMenu } = await readSettings();
+  const { host, token, autoDetectUrl, showContextMenu } = await readSettings();
   const hostEl = document.getElementById('setting-host');
   if (hostEl) hostEl.value = host || '';
   const tokenEl = document.getElementById('setting-token');
   if (tokenEl) tokenEl.value = token || '';
-  const { autoDetectUrl } = await readSettings();
   const chk = document.getElementById('setting-auto-detect');
   if (chk) chk.checked = !!autoDetectUrl;
   const chkCtx = document.getElementById('setting-show-context');
@@ -1822,7 +1884,7 @@ document.getElementById('setting-test')?.addEventListener('click', async () => {
     
     await writeSettings({ host: normalizedHost, token });
     
-    const response = await fetch(`${normalizedHost}api/link/list?limit=1`, {
+    const response = await fetch(joinApiUrl(normalizedHost, 'api/link/list?limit=1'), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
